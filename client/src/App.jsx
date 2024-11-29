@@ -13,6 +13,7 @@ import ProductList from "./components/product-list/ProductList";
 import About from "./pages/About";
 import Home from "./pages/Home";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 // import PrivateRoute from "./components/PrivateRoute";
 // import OnlyAdminPrivateRoute from "./components/OnlyAdminPrivateRoute";
 // import CreatePost from "./pages/CreatePost";
@@ -35,6 +36,9 @@ function App() {
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+
+
 
 
         {/* <Route path="/search" element={<Search />} /> */}
