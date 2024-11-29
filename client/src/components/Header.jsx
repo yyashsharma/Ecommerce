@@ -36,7 +36,6 @@ const Header = () => {
     //   const res = await fetch(`/api/v1/user/signout`, {
     //     method: "POST",
     //   });
-
     //   const data = await res.json();
     //   if (data.success === false) {
     //     // dispatch(deleteUserFailure());
@@ -79,7 +78,7 @@ const Header = () => {
           // onChange={(e) => setSearchTerm(e.target.value)}
         ></TextInput>
       </form>
-      
+
       <Button gradientDuoTone="tealToLime" className="w-12 h-10 lg:hidden" pill>
         <AiOutlineSearch />
       </Button>
@@ -92,39 +91,41 @@ const Header = () => {
         >
           {theme === "light" ? <FaMoon /> : <FaSun />}
         </Button>
-        <ShoppingCartIcon className="h-6 w-6 mt-2 mx-4" />
-        <span className="inline-flex items-center mb-5 -ml-7 rounded-md bg-red-50 px-2  text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
-        7
-      </span>
-       
-        {/* {currentUser ? ( */}
-          <Dropdown
-            arrowIcon={false}
-            inline
-            label={
-              <Avatar alt="user" img={""} rounded />
-            }
-          >
-            <Dropdown.Header>
-              <span className="block text-sm">{"yash"}</span>
-              <span className="block truncate text-sm font-medium">
-                {"ys6845008@gmail.com"}
-              </span>
-            </Dropdown.Header>
+        <Link to={"/cart"}>
+          <Button gradientDuoTone="purpleToBlue" className="h-10 w-10 items-center">
+            <ShoppingCartIcon className="h-6 w-6 mt-2 mx-4" />
+            <span className="inline-flex items-center mb-5 -ml-7 rounded-md bg-red-50 px-2  text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
+              7
+            </span>
+          </Button>
+        </Link>
 
-            <Link to={"/dashboard?tab=profile"}>
-              <Dropdown.Item>Profile</Dropdown.Item>
-            </Link>
-            <Dropdown.Divider />
-            <Dropdown.Item onClick={handleSignout}>Sign out</Dropdown.Item>
-          </Dropdown>
+        {/* {currentUser ? ( */}
+        <Dropdown
+          arrowIcon={false}
+          inline
+          label={<Avatar alt="user" img={""} rounded />}
+        >
+          <Dropdown.Header>
+            <span className="block text-sm">{"yash"}</span>
+            <span className="block truncate text-sm font-medium">
+              {"ys6845008@gmail.com"}
+            </span>
+          </Dropdown.Header>
+
+          <Link to={"/dashboard?tab=profile"}>
+            <Dropdown.Item>Profile</Dropdown.Item>
+          </Link>
+          <Dropdown.Divider />
+          <Dropdown.Item onClick={handleSignout}>Sign out</Dropdown.Item>
+        </Dropdown>
         {/* ) : ( */}
 
-          <Link to={"/sign-in"}>
-            <Button gradientDuoTone="tealToLime" outline>
-              Sign In
-            </Button>
-          </Link>
+        <Link to={"/sign-in"}>
+          <Button gradientDuoTone="tealToLime" outline>
+            Sign In
+          </Button>
+        </Link>
         {/* )} */}
         <Navbar.Toggle />
       </div>
