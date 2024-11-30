@@ -1,5 +1,6 @@
 
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import { useState } from "react";
 
 import { Link } from "react-router-dom";
 
@@ -51,6 +52,7 @@ const addresses = [
 ];
 
 const Checkout = () => {
+  const [open, setOpen] = useState(true);
   return (
     <div className="mx-auto max-w-6xl px-1 py-4 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 gap-x-8 gap-y-4 px-5 lg:grid-cols-5 lg:gap-y-10">
