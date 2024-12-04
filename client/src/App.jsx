@@ -15,9 +15,9 @@ import Home from "./pages/Home";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import ProductDetails from "./pages/ProductDetails";
+import CreateProduct from "./pages/CreateProduct";
 // import PrivateRoute from "./components/PrivateRoute";
-// import OnlyAdminPrivateRoute from "./components/OnlyAdminPrivateRoute";
-// import CreatePost from "./pages/CreatePost";
+import OnlyAdminPrivateRoute from "./components/OnlyAdminPrivateRoute";
 // import UpdatePost from "./pages/UpdatePost";
 // import PostPage from "./pages/PostPage";
 // import ScrollToTop from "./components/ScrollToTop";
@@ -25,8 +25,6 @@ import ProductDetails from "./pages/ProductDetails";
 // import UpdateApprovedPost from "./pages/UpdateApprovedPost";
 
 function App() {
-
-
   return (
     <Router>
       {/* <ScrollToTop /> */}
@@ -40,23 +38,19 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/product-details" element={<ProductDetails />} />
 
-
         {/* <Route path="/search" element={<Search />} /> */}
         {/* <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
         </Route> */}
-        {/* <Route element={<OnlyAdminPrivateRoute />}>
-          <Route path="/create-post" element={<CreatePost />} />
-          <Route path="/update-post/:postId" element={<UpdatePost />} />
-          <Route path="/update-approved-post/:postId" element={<UpdateApprovedPost />} />
-        </Route> */}
-        {/* <Route path="/projects" element={<Projects />} />
-        <Route path="/post/:postSlug" element={<PostPage />} /> */}
+        <Route element={<OnlyAdminPrivateRoute />}>
+          <Route path="/create-product" element={<CreateProduct />} />
+          {/* <Route path="/update-product/:productId" element={<UpdatePost />} /> */}
+        </Route>
       </Routes>
       <FooterComponent />
       <ToastContainer position="top-center" />
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;

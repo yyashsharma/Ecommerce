@@ -52,6 +52,10 @@ const productSchema = new mongoose.Schema({
     type: [String], // Array of colors (e.g., ['red', 'blue', 'green'])
     default: [], // Default to an empty array
   },
+  sizes: {
+    type: [String], // Array of colors (e.g., ['red', 'blue', 'green'])
+    default: [], // Default to an empty array
+  },
   images: {
     type: [String], // Array of image URLs
     default: [], // Default to an empty array
