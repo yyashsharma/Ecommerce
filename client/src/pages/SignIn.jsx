@@ -3,54 +3,53 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import OAuth from "../components/OAuth";
-// import {
-//   signInStart,
-//   signInSuccess,
-//   signInFailure,
-// } from "../redux/user/userSlice";
-// import { useDispatch, useSelector } from "react-redux";
-// import OAuth from "../components/OAuth";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const SignIn = () => {
-  // const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({});
 
-  // const { loading } = useSelector((state) => state.user);
+  const { loading } = useSelector((state) => state.user);
 
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if (!formData.email || !formData.password) {
-    //   return toast.error("Please fill out all fields");
-    // }
+    if (!formData.email || !formData.password) {
+      return toast.error("Please fill out all fields");
+    }
 
-    // try {
-    //   dispatch(signInStart());
-    //   const res = await fetch("/api/v1/auth/signin", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(formData),
-    //   });
+    try {
+      dispatch(signInStart());
+      const res = await fetch("/api/v1/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    //   const data = await res.json();
-    //   if (data.success === false) {
-    //     dispatch(signInFailure());
-    //     return toast.error(data.message);
-    //   }
-    //   toast.success(data.message);
-    //   navigate("/");
-    //   dispatch(signInSuccess(data.rest));
-    // } catch (error) {
-    //   toast.error(error.message);
-    //   dispatch(signInFailure());
-    // }
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(signInFailure());
+        return toast.error(data.message);
+      }
+      toast.success(data.message);
+      navigate("/");
+      dispatch(signInSuccess(data.rest));
+    } catch (error) {
+      toast.error(error.message);
+      dispatch(signInFailure());
+    }
   };
 
   const handleChange = (e) => {
-    // setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
+    setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
 
   return (
@@ -93,9 +92,9 @@ const SignIn = () => {
             <Button
               gradientDuoTone="purpleToPink"
               type="submit"
-              // disabled={loading}
+              disabled={loading}
             >
-              {/* {loading ? <Spinner size="sm" /> : "Sign In"} */}   sign in
+              {loading ? <Spinner size="sm" /> : "Sign In"}  
             </Button>
             <OAuth />
           </form>

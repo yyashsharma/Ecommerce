@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import OAuth from "../components/OAuth";
-// import OAuth from "../components/OAuth";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
@@ -13,32 +12,32 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // if (!formData.username || !formData.email || !formData.password) {
-    //   return toast.error("Please fill out all fields");
-    // }
+    if (!formData.username || !formData.email || !formData.password) {
+      return toast.error("Please fill out all fields");
+    }
 
-    // try {
-    //   setLoading(true);
-    //   const res = await fetch("/api/v1/auth/signup", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(formData),
-    //   });
+    try {
+      setLoading(true);
+      const res = await fetch("/api/v1/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    //   const data = await res.json();
-    //   if (data.success === false) {
-    //     setLoading(false);
-    //     return toast.error(data.message);
-    //   }
-    //   toast.success(data.message);
-    //   setLoading(false);
-    //   navigate("/sign-in");
-    // } catch (error) {
-    //   toast.error(error.message);
-    //   setLoading(false);
-    // }
+      const data = await res.json();
+      if (data.success === false) {
+        setLoading(false);
+        return toast.error(data.message);
+      }
+      toast.success(data.message);
+      setLoading(false);
+      navigate("/sign-in");
+    } catch (error) {
+      toast.error(error.message);
+      setLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -95,7 +94,7 @@ const SignUp = () => {
               type="submit"
               disabled={loading}
             >
-              {/* {loading ? <Spinner size="sm" /> : "Sign Up"} */}  Sign Up
+              {loading ? <Spinner size="sm" /> : "Sign Up"}  
             </Button>
             <OAuth />
           </form>

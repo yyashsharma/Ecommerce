@@ -6,7 +6,7 @@ import { FaMoon, FaSun } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../redux/theme/themeSlice";
 import { toast } from "react-toastify";
-import { signoutSuccess } from "../redux/user/userSlice";
+import { signoutSuccess,deleteUserStart,deleteUserFailure } from "../redux/user/userSlice";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 
 const Header = () => {
@@ -20,33 +20,33 @@ const Header = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const searchTermForUrl = urlParams.get("searchTerm");
-    if (searchTermForUrl) {
-      setSearchTerm(searchTermForUrl);
-    }
-  }, [location.search]);
+  // useEffect(() => {
+  //   const urlParams = new URLSearchParams(location.search);
+  //   const searchTermForUrl = urlParams.get("searchTerm");
+  //   if (searchTermForUrl) {
+  //     setSearchTerm(searchTermForUrl);
+  //   }
+  // }, [location.search]);
 
   const dispatch = useDispatch();
 
   const handleSignout = async () => {
-    // try {
-    //   // dispatch(deleteUserStart());
-    //   const res = await fetch(`/api/v1/user/signout`, {
-    //     method: "POST",
-    //   });
-    //   const data = await res.json();
-    //   if (data.success === false) {
-    //     // dispatch(deleteUserFailure());
-    //     return toast.error(data.message);
-    //   }
-    //   dispatch(signoutSuccess());
-    //   toast.success(data.message);
-    // } catch (error) {
-    //   toast.error(error.message);
-    //   // dispatch(deleteUserFailure());
-    // }
+    try {
+      dispatch(deleteUserStart());
+      const res = await fetch(`/api/v1/auth/signout`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(deleteUserFailure());
+        return toast.error(data.message);
+      }
+      dispatch(signoutSuccess());
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error.message);
+      dispatch(deleteUserFailure());
+    }
   };
 
   const handleSubmit = (e) => {
@@ -82,12 +82,12 @@ const Header = () => {
       <Button gradientDuoTone="tealToLime" className="w-12 h-10 lg:hidden" pill>
         <AiOutlineSearch />
       </Button>
-      <div className="flex gap-2 md:order-2">
+      <div className="flex gap-4 md:order-2">
         <Button
           gradientDuoTone="purpleToBlue"
           className="w-12 h-10 hidden sm:inline"
           pill
-          // onClick={() => dispatch(toggleTheme())}
+          onClick={() => dispatch(toggleTheme())}
         >
           {theme === "light" ? <FaMoon /> : <FaSun />}
         </Button>
@@ -100,16 +100,16 @@ const Header = () => {
           </Button>
         </Link>
 
-        {/* {currentUser ? ( */}
+        {currentUser ? (
         <Dropdown
           arrowIcon={false}
           inline
-          label={<Avatar alt="user" img={""} rounded />}
+          label={<Avatar alt="user" img={currentUser.profilePicture} rounded />}
         >
           <Dropdown.Header>
-            <span className="block text-sm">{"yash"}</span>
+            <span className="block text-sm">{currentUser.username}</span>
             <span className="block truncate text-sm font-medium">
-              {"ys6845008@gmail.com"}
+              {currentUser.email}
             </span>
           </Dropdown.Header>
 
@@ -119,14 +119,14 @@ const Header = () => {
           <Dropdown.Divider />
           <Dropdown.Item onClick={handleSignout}>Sign out</Dropdown.Item>
         </Dropdown>
-        {/* ) : ( */}
+      ) : ( 
 
         <Link to={"/sign-in"}>
           <Button gradientDuoTone="tealToLime" outline>
             Sign In
           </Button>
         </Link>
-        {/* )} */}
+        )} 
         <Navbar.Toggle />
       </div>
       <Navbar.Collapse>
