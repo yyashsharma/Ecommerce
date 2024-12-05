@@ -10,7 +10,7 @@ export const createProduct = async (req, res, next) => {
         return next(errorHandler(400, 'Please provide all required fields '))
     }
 
-       
+
     const newProduct = new Product({
         ...req.body
     })
@@ -27,25 +27,26 @@ export const getProducts = async (req, res, next) => {
         const startIndex = parseInt(req.query.startIndex) || 0;
         const limit = parseInt(req.query.limit) || 9;
         const sortDirections = req.query.order === 'asc' ? 1 : -1;
-       
-        const posts = await Post.find({
+
+        const products = await Product.find({
             ...(req.query.userId && { userId: req.query.userId }),
             ...(req.query.category && { category: req.query.category }),
-            ...(req.query.slug && { slug: req.query.slug }),
             ...(req.query.postId && { _id: req.query.postId }),
+            
             ...(req.query.searchTerm && {
                 $or: [
-                    { title: { $regex: req.query.searchTerm, $options: 'i' } },
-                    { content: { $regex: req.query.searchTerm, $options: 'i' } },
+                    { name: { $regex: req.query.searchTerm, $options: 'i' } },
+                    { description: { $regex: req.query.searchTerm, $options: 'i' } },
+                    { category: { $regex: req.query.searchTerm, $options: 'i' } },
+
                 ]
-            }),
-            approved: true
+            })
         })
             .sort({ updatedAt: sortDirections })
             .skip(startIndex)
             .limit(limit);
 
-        const totalPosts = await Post.countDocuments();
+        const totalProducts = await Product.countDocuments();
 
         const now = new Date();
         const oneMonthAgo = new Date(
@@ -54,15 +55,15 @@ export const getProducts = async (req, res, next) => {
             now.getDate()
         );
 
-        const lastMonthPosts = await Post.countDocuments({
+        const lastMonthProducts = await Product.countDocuments({
             createdAt: { $gte: oneMonthAgo }
         });
 
         res.status(201).json({
             success: true,
-            posts,
-            totalPosts,
-            lastMonthPosts
+            products,
+            totalProducts,
+            lastMonthProducts
         });
 
 

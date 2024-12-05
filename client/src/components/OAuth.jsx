@@ -2,7 +2,7 @@ import { Button } from "flowbite-react";
 import React from "react";
 import { AiFillGoogleCircle } from "react-icons/ai";
 import { app } from "../firebase";
-import { signInWithPopup, GoogleAuthProvider, getAuth } from "firebase/auth";
+import { signInWithPopup,signInWithRedirect, GoogleAuthProvider, getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { signInSuccess, signInFailure } from "../redux/user/userSlice";

@@ -26,12 +26,13 @@ const CreateProduct = () => {
     category: "",
     colors: [],
     images: [],
-    sizes:[]
+    sizes:[],
   });
   const [files, setFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState([]);
   const [colorInput, setColorInput] = useState(""); // For adding colors dynamically
-  const [sizeInput, setSizeInput] = useState("");
+  const [sizeInput, setSizeInput] = useState(""); // For adding colors dynamically
+
   const navigate = useNavigate();
 
   const handleUploadImages = async () => {
@@ -69,7 +70,7 @@ const CreateProduct = () => {
               images: [...prev.images, ...uploadedImages], // Append new images to existing images
             }));
             setUploadProgress([]);
-            toast.success("All images uploaded successfully!");
+            toast.success("This image uploaded successfully!");
           }
         }
       );
@@ -86,18 +87,11 @@ const CreateProduct = () => {
     }
   };
 
-  const handleAddSize = () => {
-    if (sizeInput.trim() !== "") {
-      setFormData((prev) => ({
-        ...prev,
-        sizes: [...prev.sizes, sizeInput.trim()],
-      }));
-      setSizeInput("");
-    }
-  };
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  console.log(  currentUser.isAdmin)
     if (!currentUser?.isAdmin) {
       toast.error("You are not authorized to create a product.");
       return;
@@ -118,7 +112,7 @@ const CreateProduct = () => {
       }
 
       toast.success("Product created successfully!");
-      navigate(`/`);
+      // navigate(`/`);
     } catch (error) {
       toast.error("Something went wrong while submitting the form");
     }
@@ -207,36 +201,42 @@ const CreateProduct = () => {
           )}
         </div>
 
-        {/* Sizes */}
-        <div className="flex flex-col gap-4">
-          <div className="flex gap-4">
-            <TextInput
-              type="text"
-              placeholder="Add a size (e.g., S, M, L)"
-              value={sizeInput}
-              className="flex-1"
-              onChange={(e) => setSizeInput(e.target.value)}
-            />
-            <Button
-              type="button"
-              onClick={handleAddSize}
-            >
-              Add Size
-            </Button>
-          </div>
-          {formData.sizes?.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {formData.sizes.map((size, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-teal-100 rounded-full text-teal-700"
-                >
-                  {size}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
+      {/* Sizes */}
+<div className="flex items-center gap-3">
+  <div className="flex gap-4">
+    <Select
+      required
+      onChange={(e) => {
+        const selectedSize = e.target.value.trim();
+        if (selectedSize !== "" && !formData.sizes.includes(selectedSize)) {
+          setFormData((prev) => ({
+            ...prev,
+            sizes: [...prev.sizes, selectedSize],
+          }));
+        }
+      }}
+    >
+      <option value="">Select a size</option>
+      <option value="S">S</option>
+      <option value="M">M</option>
+      <option value="L">L</option>
+      <option value="XL">XL</option>
+    </Select>
+  </div>
+  {formData.sizes?.length > 0 && (
+    <div className="flex flex-wrap gap-2 ">
+      {formData.sizes.map((size, index) => (
+        <span
+          key={index}
+          className="px-3 py-1 bg-teal-100 rounded-full text-teal-700"
+        >
+          {size}
+        </span>
+      ))}
+    </div>
+  )}
+</div>
+
 
         {/* Images */}
         <div className="flex flex-col gap-4 border-4 border-teal-500 border-dotted p-3">
@@ -292,7 +292,7 @@ const CreateProduct = () => {
 
         {/* Submit Button */}
         <Button type="submit" gradientDuoTone="purpleToPink">
-          Publish
+          Create
         </Button>
       </form>
     </div>
