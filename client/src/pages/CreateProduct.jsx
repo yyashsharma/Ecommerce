@@ -31,7 +31,6 @@ const CreateProduct = () => {
   const [files, setFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState([]);
   const [colorInput, setColorInput] = useState(""); // For adding colors dynamically
-  const [sizeInput, setSizeInput] = useState(""); // For adding colors dynamically
 
   const navigate = useNavigate();
 

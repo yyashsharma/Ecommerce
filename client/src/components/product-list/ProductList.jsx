@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogBackdrop,
@@ -17,10 +17,9 @@ import {
   FunnelIcon,
   MinusIcon,
   PlusIcon,
-  Squares2X2Icon,
 } from "@heroicons/react/20/solid";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { StarIcon } from "@heroicons/react/16/solid";
 import { FaDollarSign } from "react-icons/fa";
 
@@ -31,42 +30,22 @@ const sortOptions = [
 ];
 
 const filters = [
-  {
-    id: "brands",
-    name: "Brands",
-    options: [
-      { value: "Essence", label: "Essence", checked: false },
-      { value: "Glamour Beauty", label: "Glamour Beauty", checked: false },
-      { value: "Velvet Touch", label: "Velvet Touch", checked: false },
-      { value: "Chic Cosmetics", label: "Chic Cosmetics", checked: false },
-      { value: "Nail Couture", label: "Nail Couture", checked: false },
-      { value: "Calvin Klein", label: "Calvin Klein", checked: false },
-      { value: "Chanel", label: "Chanel", checked: false },
-      { value: "Dior", label: "Dior", checked: false },
-      {
-        value: "Dolce & Gabbana",
-        label: "Dolce & Gabbana",
-        checked: false,
-      },
-      { value: "Gucci", label: "Gucci", checked: false },
-      {
-        value: "Annibale Colombo",
-        label: "Annibale Colombo",
-        checked: false,
-      },
-      { value: "Furniture Co.", label: "Furniture Co.", checked: false },
-      { value: "Knoll", label: "Knoll", checked: false },
-      { value: "Bath Trends", label: "Bath Trends", checked: false },
-    ],
-  },
+  // {
+  //   id: "brands",
+  //   name: "Brands",
+  //   options: [
+  //     { value: "hp", label: "Hp", checked: false },
+  //     { value: "mamaearth", label: "Mama Earth", checked: false },
+  //     { value: "apple", label: "Apple", checked: false },
+  //   ],
+  // },
   {
     id: "category",
     name: "Category",
     options: [
-      { value: "beauty", label: "Beauty", checked: false },
-      { value: "fragrances", label: "Fragrances", checked: false },
-      { value: "furniture", label: "Furniture", checked: true },
-      { value: "groceries", label: "Groceries", checked: false },
+      { value: "smartphone", label: "Smartphone", checked: false },
+      { value: "cleaning", label: "Cleaning", checked: false },
+      { value: "laptop", label: "Laptop", checked: false },
     ],
   },
 ];
@@ -75,8 +54,58 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const ProductList = ({ products }) => {
+const ProductList = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category); // Update to the selected category
+  };
+
+  useEffect(() => {
+    //   // const urlParams = new URLSearchParams(location.search);
+    //   // const searchTermFromUrl = urlParams.get("searchTerm");
+    //   // const sortFromUrl = urlParams.get("order");
+    //   // const categoryFromUrl = urlParams.get("category");
+    //   // if (searchTermFromUrl || sortFromUrl || categoryFromUrl) {
+    //   //   setSidebarData({
+    //   //     ...sidebarData,
+    //   //     searchTerm: searchTermFromUrl,
+    //   //     order: sortFromUrl,
+    //   //     category: categoryFromUrl,
+    //   //   });
+    //   // }
+    const fetchPosts = async () => {
+      setLoading(true);
+
+      // Build query with the selected category
+      const query = selectedCategory ? `?category=${selectedCategory}` : "";
+
+      try {
+        const res = await fetch(`/api/v1/product/getProducts${query}`);
+        if (!res.ok) {
+          throw new Error("Failed to fetch products");
+        }
+
+        const data = await res.json();
+        setProducts(data.products);
+        console.log(products)
+        setShowMore(data.products.length === 9);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, [selectedCategory]); // Trigger only when selectedCategory changes
 
   return (
     <div>
@@ -151,7 +180,11 @@ const ProductList = ({ products }) => {
 
                 <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
                   {/* laptops filters */}
-                  <LaptopFilters />
+                  <LaptopFilters
+                    selectedCategory={selectedCategory}
+                    setSelectedCategory={setSelectedCategory}
+                    handleCategoryChange={handleCategoryChange}
+                  />
 
                   {/* Product grid */}
                   <ProductGrid products={products} />
@@ -280,7 +313,11 @@ function MobileFilters({ mobileFiltersOpen, setMobileFiltersOpen }) {
   );
 }
 
-function LaptopFilters() {
+function LaptopFilters({
+  selectedCategory,
+  setSelectedCategory,
+  handleCategoryChange,
+}) {
   return (
     <>
       {/* Filters for laptop*/}
@@ -315,14 +352,15 @@ function LaptopFilters() {
                     <div className="flex h-5 shrink-0 items-center">
                       <div className="group grid size-4 grid-cols-1">
                         <input
-                          defaultValue={option.value}
-                          defaultChecked={option.checked}
+                          value={option.value}
+                          checked={selectedCategory === option.value}
                           id={`filter-${section.id}-${optionIdx}`}
                           name={`${section.id}[]`}
                           type="checkbox"
-                          // onChange={handleChangeFilter(e,section,option)}
+                          onChange={() => handleCategoryChange(option.value)}
                           className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
                         />
+
                         <svg
                           fill="none"
                           viewBox="0 0 14 14"
@@ -373,13 +411,13 @@ function ProductGrid({ products }) {
             <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
               {products.map((product) => (
                 <div
-                  key={product.id}
+                  key={product._id}
                   className="group relative border-sloid border-2 border-slate-100 rounded-lg p-3"
                 >
-                  <Link to="/product-details" as={"div"}>
+                  <Link to={`/product-details/${product._id}`} as={"div"}>
                     <img
-                      alt={product.title}
-                      src={product.thumbnail}
+                      alt={product.name}
+                      src={product.images[0]}
                       className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 lg:aspect-auto lg:h-80"
                     />
                     <div className="mt-4 flex justify-between">
@@ -389,29 +427,23 @@ function ProductGrid({ products }) {
                             aria-hidden="true"
                             className="absolute inset-0"
                           />
-                          {product.title}
+                          {product.name}
                         </h3>
                         <p className=" text-sm text-gray-500">
                           <StarIcon className="w-4 h-4 inline text-yellow-300 mb-1" />
                           <span className="align-center px-1">
-                            {product.rating}
+                            {product.averageRating}
                           </span>
                         </p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-900">
-                          <span className="flex justify-center items-center">
-                            {" "}
-                            <FaDollarSign />{" "}
-                            {Math.round(
-                              product.price *
-                                (1 - product.discountPercentage / 100)
-                            )}
+                          <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-red-600/10">
+                            In Stock : {product.stock}
                           </span>
                         </p>
-                        <p className="text-sm font-medium text-gray-400 line-through">
+                        <p className="text-sm font-medium text-gray-900 mt-1">
                           <span className="flex justify-center items-center">
-                            {" "}
                             <FaDollarSign /> {product.price}
                           </span>
                         </p>
