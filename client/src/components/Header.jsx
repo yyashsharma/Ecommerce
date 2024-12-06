@@ -6,7 +6,11 @@ import { FaMoon, FaSun } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../redux/theme/themeSlice";
 import { toast } from "react-toastify";
-import { signoutSuccess,deleteUserStart,deleteUserFailure } from "../redux/user/userSlice";
+import {
+  signoutSuccess,
+  deleteUserStart,
+  deleteUserFailure,
+} from "../redux/user/userSlice";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 
 const Header = () => {
@@ -16,7 +20,7 @@ const Header = () => {
   const { currentUser } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [inputValue, setInputValue] = useState(""); // State to track input value
 
   const navigate = useNavigate();
 
@@ -49,12 +53,18 @@ const Header = () => {
     }
   };
 
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // const urlParams = new URLSearchParams(location.search);
-    // urlParams.set("searchTerm", searchTerm);
-    // const searchQuery = urlParams.toString();
-    // navigate(`/search?${searchQuery}`);
+
+    // If inputValue is empty, navigate to all products
+    const searchQuery = inputValue.trim()
+      ? `?search=${encodeURIComponent(inputValue)}`
+      : "";
+    navigate(`/product-list${searchQuery}`);
   };
 
   return (
@@ -69,30 +79,40 @@ const Header = () => {
         Buy
       </Link>
       <form onSubmit={handleSubmit}>
-        <TextInput
-          type="text"
-          placeholder="Search..."
-          rightIcon={AiOutlineSearch}
-          className="hidden lg:inline"
-          // value={searchTerm}
-          // onChange={(e) => setSearchTerm(e.target.value)}
-        ></TextInput>
+        <div className="flex justify-center items-center">
+          <TextInput
+            id="search"
+            type="text"
+            placeholder="Search..."
+            // className="hidden lg:inline"
+            value={inputValue} // Controlled input
+            onChange={handleInputChange} // Update state on input change
+          />
+          <Button
+            type="submit"
+            gradientDuoTone="tealToLime"
+            className="w-8 h-8 -ml-9  border-2 border-solid border-teal-500"
+            pill
+          >
+            <AiOutlineSearch />
+          </Button>
+        </div>
       </form>
-
-      <Button gradientDuoTone="tealToLime" className="w-12 h-10 lg:hidden" pill>
-        <AiOutlineSearch />
-      </Button>
-      <div className="flex gap-4 md:order-2">
+      
+      <div className="flex gap-4 mt-4 lg:mt-0 md:order-2 ">
         <Button
           gradientDuoTone="purpleToBlue"
-          className="w-12 h-10 hidden sm:inline"
+          className="w-12 h-10 "
           pill
           onClick={() => dispatch(toggleTheme())}
         >
           {theme === "light" ? <FaMoon /> : <FaSun />}
         </Button>
         <Link to={"/cart"}>
-          <Button gradientDuoTone="purpleToBlue" className="h-10 w-10 items-center">
+          <Button
+            gradientDuoTone="purpleToBlue"
+            className="h-10 w-10 items-center"
+          >
             <ShoppingCartIcon className="h-6 w-6 mt-2 mx-4" />
             <span className="inline-flex items-center mb-5 -ml-7 rounded-md bg-red-50 px-2  text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
               7
@@ -101,33 +121,34 @@ const Header = () => {
         </Link>
 
         {currentUser ? (
-        <Dropdown
-          arrowIcon={false}
-          inline
-          label={<Avatar alt="user" img={currentUser.profilePicture} rounded />}
-        >
-          <Dropdown.Header>
-            <span className="block text-sm">{currentUser.username}</span>
-            <span className="block truncate text-sm font-medium">
-              {currentUser.email}
-            </span>
-          </Dropdown.Header>
+          <Dropdown
+            arrowIcon={false}
+            inline
+            label={
+              <Avatar alt="user" img={currentUser.profilePicture} rounded />
+            }
+          >
+            <Dropdown.Header>
+              <span className="block text-sm">{currentUser.username}</span>
+              <span className="block truncate text-sm font-medium">
+                {currentUser.email}
+              </span>
+            </Dropdown.Header>
 
-          <Link to={"/dashboard?tab=profile"}>
-            <Dropdown.Item>Profile</Dropdown.Item>
+            <Link to={"/dashboard?tab=profile"}>
+              <Dropdown.Item>Profile</Dropdown.Item>
+            </Link>
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={handleSignout}>Sign out</Dropdown.Item>
+          </Dropdown>
+        ) : (
+          <Link to={"/sign-in"}>
+            <Button gradientDuoTone="tealToLime" outline>
+              Sign In
+            </Button>
           </Link>
-          <Dropdown.Divider />
-          <Dropdown.Item onClick={handleSignout}>Sign out</Dropdown.Item>
-        </Dropdown>
-      ) : ( 
-
-        <Link to={"/sign-in"}>
-          <Button gradientDuoTone="tealToLime" outline>
-            Sign In
-          </Button>
-        </Link>
-        )} 
-        <Navbar.Toggle />
+        )}
+        <Navbar.Toggle className="ml-44"/>
       </div>
       <Navbar.Collapse>
         <Navbar.Link active={path === "/"} as={"div"}>

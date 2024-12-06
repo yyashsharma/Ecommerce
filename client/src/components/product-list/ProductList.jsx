@@ -43,6 +43,7 @@ const filters = [
     id: "category",
     name: "Category",
     options: [
+      { value: "", label: "All", checked: true },
       { value: "smartphone", label: "Smartphone", checked: false },
       { value: "cleaning", label: "Cleaning", checked: false },
       { value: "laptop", label: "Laptop", checked: false },
@@ -56,36 +57,32 @@ function classNames(...classes) {
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(""); //for the selected category
+  const [selectedSort, setSelectedSort] = useState(""); // For the selected sort option
   const [loading, setLoading] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("");
 
   const location = useLocation();
-  const navigate = useNavigate();
+
+  const searchParams = new URLSearchParams(location.search);
+  const searchTerm = searchParams.get("search") || "";
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category); // Update to the selected category
   };
 
   useEffect(() => {
-    //   // const urlParams = new URLSearchParams(location.search);
-    //   // const searchTermFromUrl = urlParams.get("searchTerm");
-    //   // const sortFromUrl = urlParams.get("order");
-    //   // const categoryFromUrl = urlParams.get("category");
-    //   // if (searchTermFromUrl || sortFromUrl || categoryFromUrl) {
-    //   //   setSidebarData({
-    //   //     ...sidebarData,
-    //   //     searchTerm: searchTermFromUrl,
-    //   //     order: sortFromUrl,
-    //   //     category: categoryFromUrl,
-    //   //   });
-    //   // }
     const fetchPosts = async () => {
       setLoading(true);
 
-      // Build query with the selected category
-      const query = selectedCategory ? `?category=${selectedCategory}` : "";
+      // Build query with selected category, sort option, and search term
+      const queryParts = [];
+      if (selectedCategory) queryParts.push(`category=${selectedCategory}`);
+      if (selectedSort) queryParts.push(`order=${selectedSort}`);
+      if (searchTerm)
+        queryParts.push(`searchTerm=${encodeURIComponent(searchTerm)}`);
+      const query = queryParts.length > 0 ? `?${queryParts.join("&")}` : "";
 
       try {
         const res = await fetch(`/api/v1/product/getProducts${query}`);
@@ -95,7 +92,6 @@ const ProductList = () => {
 
         const data = await res.json();
         setProducts(data.products);
-        console.log(products)
         setShowMore(data.products.length === 9);
       } catch (error) {
         console.error(error);
@@ -105,7 +101,29 @@ const ProductList = () => {
     };
 
     fetchPosts();
-  }, [selectedCategory]); // Trigger only when selectedCategory changes
+  }, [selectedCategory, selectedSort, searchTerm]); // Trigger when category, sort, or search changes
+
+
+  const handleShowMore = async () => {
+    const numberOfPosts = products.length;
+    const startIndex = numberOfPosts;
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set("startIndex", startIndex);
+    const searchQuery = urlParams.toString();
+    const res = await fetch(`/api/v1/post/getposts?${searchQuery}`);
+    if (!res.ok) {
+      return;
+    }
+    if (res.ok) {
+      const data = await res.json();
+      setProducts([...products, ...data.products]);
+      if (data.products.length === 9) {
+        setShowMore(true);
+      } else {
+        setShowMore(false);
+      }
+    }
+  };
 
   return (
     <div>
@@ -115,6 +133,8 @@ const ProductList = () => {
             <MobileFilters
               mobileFiltersOpen={mobileFiltersOpen}
               setMobileFiltersOpen={setMobileFiltersOpen}
+              selectedCategory={selectedCategory}
+              handleCategoryChange={handleCategoryChange}
             />
 
             <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -142,17 +162,17 @@ const ProductList = () => {
                       <div className="py-1">
                         {sortOptions.map((option) => (
                           <MenuItem key={option.name}>
-                            <a
-                              href={option.href}
+                            <button
+                              onClick={() => setSelectedSort(option.order)} // Update selected sort
                               className={classNames(
-                                option.current
+                                selectedSort === option.value
                                   ? "font-medium text-gray-900"
                                   : "text-gray-500",
                                 "block px-4 py-2 text-sm data-[focus]:bg-gray-100 data-[focus]:outline-none"
                               )}
                             >
                               {option.name}
-                            </a>
+                            </button>
                           </MenuItem>
                         ))}
                       </div>
@@ -202,7 +222,12 @@ const ProductList = () => {
 
 //Divide Product List into
 
-function MobileFilters({ mobileFiltersOpen, setMobileFiltersOpen }) {
+function MobileFilters({
+  mobileFiltersOpen,
+  setMobileFiltersOpen,
+  selectedCategory,
+  handleCategoryChange,
+}) {
   return (
     <>
       {/* Mobile filter dialog */}
@@ -265,12 +290,17 @@ function MobileFilters({ mobileFiltersOpen, setMobileFiltersOpen }) {
                           <div className="flex h-5 shrink-0 items-center">
                             <div className="group grid size-4 grid-cols-1">
                               <input
-                                defaultValue={option.value}
-                                id={`filter-mobile-${section.id}-${optionIdx}`}
+                                value={option.value}
+                                checked={selectedCategory === option.value}
+                                id={`filter-${section.id}-${optionIdx}`}
                                 name={`${section.id}[]`}
                                 type="checkbox"
+                                onChange={() =>
+                                  handleCategoryChange(option.value)
+                                }
                                 className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
                               />
+
                               <svg
                                 fill="none"
                                 viewBox="0 0 14 14"
@@ -294,8 +324,8 @@ function MobileFilters({ mobileFiltersOpen, setMobileFiltersOpen }) {
                             </div>
                           </div>
                           <label
-                            htmlFor={`filter-mobile-${section.id}-${optionIdx}`}
-                            className="min-w-0 flex-1 text-gray-500"
+                            htmlFor={`filter-${section.id}-${optionIdx}`}
+                            className="text-sm text-gray-600"
                           >
                             {option.label}
                           </label>
@@ -313,11 +343,7 @@ function MobileFilters({ mobileFiltersOpen, setMobileFiltersOpen }) {
   );
 }
 
-function LaptopFilters({
-  selectedCategory,
-  setSelectedCategory,
-  handleCategoryChange,
-}) {
+function LaptopFilters({ selectedCategory, handleCategoryChange }) {
   return (
     <>
       {/* Filters for laptop*/}
@@ -429,7 +455,7 @@ function ProductGrid({ products }) {
                           />
                           {product.name}
                         </h3>
-                        <p className=" text-sm text-gray-500">
+                        <p className=" text-sm text-gray-500 mt-2">
                           <StarIcon className="w-4 h-4 inline text-yellow-300 mb-1" />
                           <span className="align-center px-1">
                             {product.averageRating}
