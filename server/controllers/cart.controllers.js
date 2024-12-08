@@ -27,11 +27,11 @@ export const getCartItems = async (req, res, next) => {
     }
 };
 
-
+//add to cart
 export const updateCartItem = async (req, res, next) => {
     try {
         const { userId } = req.params;
-        const { productId, name, price, quantity } = req.body;
+        const { productId, name, price, quantity,color,size,image } = req.body;
 
         let cart = await Cart.findOne({ userId });
 
@@ -46,7 +46,7 @@ export const updateCartItem = async (req, res, next) => {
             existingItem.quantity += quantity;
         } else {
             // Add a new item
-            cart.items.push({ productId, name, price, quantity });
+            cart.items.push({ productId, name, price, quantity ,color,size,image});
         }
 
         await cart.save();

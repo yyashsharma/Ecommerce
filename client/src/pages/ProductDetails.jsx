@@ -3,6 +3,8 @@ import { StarIcon } from "@heroicons/react/20/solid";
 import { Radio, RadioGroup } from "@headlessui/react";
 import { useParams } from "react-router-dom";
 import { FaDollarSign } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const reviews = { href: "#", average: 4, totalCount: 117 };
 
@@ -12,6 +14,7 @@ function classNames(...classes) {
 
 const ProductDetails = () => {
   const { productId } = useParams();
+  const { currentUser } = useSelector((state) => state.user);
 
   const [product, setProduct] = useState({
     name: "",
@@ -27,6 +30,8 @@ const ProductDetails = () => {
   });
 
   const [loading, setLoading] = useState(true);
+  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -50,6 +55,27 @@ const ProductDetails = () => {
     };
     fetchPost();
   }, [productId]);
+
+  const handleAddToCart = async () => {
+    // if (!selectedColor || !selectedSize) {
+    //   return toast.error("Please select color and size before adding to cart");
+    // }
+
+    try {
+      const updatedCart = await updateCartItem(currentUser._id, {
+        productId,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        color: selectedColor,
+        size: selectedSize?selectedSize:"" ,
+        image: product.images[0],
+      });
+    
+    } catch (error) {
+      toast.error("Failed to add to cart");
+    }
+  };
 
   return (
     <>
@@ -130,7 +156,11 @@ const ProductDetails = () => {
                 <h3 className="text-sm font-medium text-gray-900">Color</h3>
 
                 <fieldset aria-label="Choose a color" className="mt-4">
-                  <RadioGroup className="flex items-center space-x-3">
+                  <RadioGroup
+                    className="flex items-center space-x-3"
+                    value={selectedColor}
+                    onChange={setSelectedColor}
+                  >
                     {product.colors.map((color, index) => (
                       <Radio
                         key={index} // You can use the index as the key
@@ -142,7 +172,7 @@ const ProductDetails = () => {
                       >
                         <span
                           aria-hidden="true"
-                          className={ `size-8 rounded-full border border-black/10 bg-${color}`}
+                          className={`size-8 rounded-full border border-black/10 bg-${color}`}
                         />
                       </Radio>
                     ))}
@@ -165,6 +195,8 @@ const ProductDetails = () => {
                 <fieldset aria-label="Choose a size" className="mt-4">
                   <RadioGroup
                     className="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4"
+                    value={selectedSize}
+                    onChange={setSelectedSize}
                   >
                     {product.sizes.map((size) => (
                       <Radio
@@ -175,13 +207,10 @@ const ProductDetails = () => {
                         }
                       >
                         <span>{size}</span> {/* Display the size name */}
-                        
-                          <span
-                            aria-hidden="true"
-                            className="pointer-events-none absolute -inset-px rounded-md border-2 border-transparent group-data-[focus]:border group-data-[checked]:border-indigo-500"
-                          />
-                    
-                      
+                        <span
+                          aria-hidden="true"
+                          className="pointer-events-none absolute -inset-px rounded-md border-2 border-transparent group-data-[focus]:border group-data-[checked]:border-indigo-500"
+                        />
                       </Radio>
                     ))}
                   </RadioGroup>
@@ -189,11 +218,13 @@ const ProductDetails = () => {
               </div>
 
               <button
-                type="submit"
-                className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >
-                Add to cart
-              </button>
+              type="button"
+              onClick={handleAddToCart}
+              className="mt-10 flex w-full items-center justify-center rounded-md bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700"
+            >
+              Add to cart
+            </button>
+
             </form>
           </div>
 
@@ -203,7 +234,12 @@ const ProductDetails = () => {
               <h3 className="sr-only">Description</h3>
 
               <div className="space-y-6">
-                <p className="text-base text-gray-900" dangerouslySetInnerHTML={{ __html: product && product.description }}></p>
+                <p
+                  className="text-base text-gray-900"
+                  dangerouslySetInnerHTML={{
+                    __html: product && product.description,
+                  }}
+                ></p>
               </div>
             </div>
           </div>
@@ -212,5 +248,36 @@ const ProductDetails = () => {
     </>
   );
 };
+
+ const updateCartItem = async (userId, cartItem) => {
+  try {
+    const response = await fetch(`/api/v1/cart/updateCartItem/${userId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        productId: cartItem.productId,
+        name: cartItem.name,
+        price: cartItem.price,
+        quantity: cartItem.quantity,
+        color: cartItem.color || "black",
+        size: cartItem.size || "M",
+        image: cartItem.image,
+      }),
+    });
+
+    const data = await response.json();
+    if (response.ok && data.success) {
+      toast.success("Added to cart successfully!");
+    } else {
+      throw new Error(data.message || "Failed to update cart");
+    }
+  } catch (error) {
+    toast.error(error.message || "An error occurred while updating the cart");
+    throw error; // Rethrow error for further handling if needed
+  }
+};
+
 
 export default ProductDetails;
