@@ -3,7 +3,7 @@ import { errorHandler } from "../utils/error.js"
 
 export const createProduct = async (req, res, next) => {
     if (!req.user.isAdmin) {
-        return next(errorHandler(403, 'You are not allowed to create a post'))
+        return next(errorHandler(403, 'You are not allowed to create a product'))
     }
 
     if (!req.body.name || !req.body.description || !req.body.price || !req.body.stock || !req.body.category || !req.body.colors || !req.body.images) {
