@@ -1,4 +1,4 @@
-import { User } from "../models/user.model";
+import { User } from "../models/user.model.js";
 
 
 
@@ -10,18 +10,20 @@ export const addNewAddress = async (req, res, next) => {
         }
         req.user = user;
 
-        const { street, city, state, postalCode, country } = req.body;
 
-        if (!street || !city || !state || !postalCode || !country) {
+        const { firstName, lastName, street, city, state, postalCode, country, phone } = req.body;
+
+        if (!firstName || !lastName || !street || !city || !state || !postalCode || !country || !phone) {
             return next(errorHandler(400, "All fields are required"));
-            
+
         }
 
-        const newAddress = { street, city, state, postalCode, country };
+        const newAddress = { firstName, lastName, street, city, state, postalCode, country, phone };
         req.user.addresses.push(newAddress);
         await req.user.save();
 
         res.status(201).json({ message: "Address added", address: newAddress });
+
     } catch (error) {
         next(error);
     }
@@ -61,11 +63,14 @@ export const updateAddress = async (req, res, next) => {
         }
 
         const { street, city, state, postalCode, country } = req.body;
+        if (firstName) address.firstName = firstName;
+        if (lastName) address.lastName = lastName;
         if (street) address.street = street;
         if (city) address.city = city;
         if (state) address.state = state;
         if (postalCode) address.postalCode = postalCode;
         if (country) address.country = country;
+        if (phone) address.phone = phone;
 
         await req.user.save();
 

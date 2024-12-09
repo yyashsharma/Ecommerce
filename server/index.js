@@ -5,6 +5,7 @@ import { config } from 'dotenv'
 import authRoutes from './routes/auth.route.js'
 import productRoutes from './routes/product.route.js'
 import cartRoutes from './routes/cart.route.js'
+import addressRoutes from './routes/address.route.js'
 import { ErrorHandlerMiddleware } from './middlewares/Errormiddleware.js';
 import cookieParser from 'cookie-parser';
 // import path from 'path'
@@ -29,8 +30,7 @@ app.use('/api/v1/auth', authRoutes)
 // app.use('/api/v1/user', userRoutes)
 app.use('/api/v1/product', productRoutes)
 app.use('/api/v1/cart', cartRoutes)
-
-// app.use('/api/v1/comment', commentRoutes)
+app.use('/api/v1/address', addressRoutes)
 // app.use('/api/v1',mailRoutes)
 
 

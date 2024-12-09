@@ -1,64 +1,99 @@
-
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
-import { useState } from "react";
-
-import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useState, useEffect } from "react";
 import Cart from "./Cart";
-
-const products = [
-  {
-    id: 1,
-    name: "Throwback Hip Bag",
-    href: "#",
-    color: "Salmon",
-    price: "$90.00",
-    quantity: 1,
-    imageSrc:
-      "https://tailwindui.com/plus/img/ecommerce-images/shopping-cart-page-04-product-01.jpg",
-    imageAlt:
-      "Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.",
-  },
-  {
-    id: 2,
-    name: "Medium Stuff Satchel",
-    href: "#",
-    color: "Blue",
-    price: "$32.00",
-    quantity: 1,
-    imageSrc:
-      "https://tailwindui.com/plus/img/ecommerce-images/shopping-cart-page-04-product-02.jpg",
-    imageAlt:
-      "Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.",
-  },
-  // More products...
-];
-
-const addresses = [
-  {
-    name: "kunnu",
-    street: "no.2",
-    city: "faridabad",
-    pinCode: 100212,
-    state: "haryana",
-    phone: 999999999,
-  },
-  {
-    name: "yash",
-    street: "no.3",
-    city: "Ramnagar",
-    pinCode: 100212,
-    state: "Uttarakhand",
-    phone: 949922999999,
-  },
-];
+import { useSelector } from "react-redux";
 
 const Checkout = () => {
-  const [open, setOpen] = useState(true);
+  const { currentUser } = useSelector((state) => state.user);
+  const [addresses, setAddresses] = useState([]);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    street: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    country: "",
+    phone: "",
+  });
+
+  const fetchAddresses = async () => {
+    try {
+      const response = await fetch(
+        `/api/v1/address/getAllAddress/${currentUser._id}`
+      ); // Replace with your API endpoint
+      if (!response.ok) {
+        throw new Error("Failed to fetch addresses");
+      }
+      const data = await response.json();
+      setAddresses(data);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  const addAddress = async (newAddress) => {
+    console.log("newaddbefore:", newAddress);
+    try {
+      const response = await fetch(
+        `/api/v1/address/addNewAddress/${currentUser._id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newAddress),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to add address");
+      }
+      const addedAddress = await response.json();
+      console.log("newaddafter:", addedAddress.address);
+
+      setAddresses((prevAddresses) => [...prevAddresses, addedAddress.address]);
+      console.log("addressess:", addresses);
+      toast.success("new address added");
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    addAddress(formData);
+    setFormData({
+      firstName: "",
+      lastName: "",
+      street: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "",
+      phone: "",
+    });
+  };
+
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  console.log("debug:", addresses);
+
   return (
     <div className="mx-auto max-w-6xl px-1 py-4 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 gap-x-8 gap-y-4 px-5 lg:grid-cols-5 lg:gap-y-10">
         <div className="lg:col-span-3">
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="border-b border-gray-900/10 pb-12">
               <h1 className="text-2xl font-semibold text-gray-900">
                 Personal Information
@@ -73,12 +108,14 @@ const Checkout = () => {
                   </label>
                   <div className="mt-2">
                     <input
-                      id="first-name"
-                      name="first-name"
+                      id="firstName"
+                      name="firstName"
                       type="text"
-                      autoComplete="given-name"
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900"
                     />
+                    {console.log(formData.firstName)}
                   </div>
                 </div>
 
@@ -91,29 +128,31 @@ const Checkout = () => {
                   </label>
                   <div className="mt-2">
                     <input
-                      id="last-name"
-                      name="last-name"
+                      id="lastName"
+                      name="lastName"
                       type="text"
-                      autoComplete="family-name"
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900"
                     />
                   </div>
                 </div>
 
                 <div className="sm:col-span-4">
                   <label
-                    htmlFor="email"
+                    htmlFor="phone"
                     className="block text-sm/6 font-medium text-gray-900"
                   >
-                    Email address
+                    Phone number
                   </label>
                   <div className="mt-2">
                     <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                      id="phone"
+                      name="phone"
+                      type="text"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900"
                     />
                   </div>
                 </div>
@@ -129,12 +168,15 @@ const Checkout = () => {
                     <select
                       id="country"
                       name="country"
-                      autoComplete="country-name"
-                      className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                      value={formData.country}
+                      onChange={handleInputChange}
+                      className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
                     >
-                      <option>United States</option>
-                      <option>Canada</option>
-                      <option>Mexico</option>
+                      <option value="United States">United States</option>
+                      <option value="Canada">Canada</option>
+                      <option value="Mexico">India</option>
+                      <option value="Mexico">Australia</option>
+                      <option value="Mexico">Mexico</option>
                     </select>
                     <ChevronDownIcon
                       aria-hidden="true"
@@ -152,11 +194,12 @@ const Checkout = () => {
                   </label>
                   <div className="mt-2">
                     <input
-                      id="street-address"
-                      name="street-address"
+                      id="street"
+                      name="street"
                       type="text"
-                      autoComplete="street-address"
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                      value={formData.street}
+                      onChange={handleInputChange}
+                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900"
                     />
                   </div>
                 </div>
@@ -173,8 +216,9 @@ const Checkout = () => {
                       id="city"
                       name="city"
                       type="text"
-                      autoComplete="address-level2"
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                      value={formData.city}
+                      onChange={handleInputChange}
+                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900"
                     />
                   </div>
                 </div>
@@ -188,29 +232,31 @@ const Checkout = () => {
                   </label>
                   <div className="mt-2">
                     <input
-                      id="region"
-                      name="region"
+                      id="state"
+                      name="state"
                       type="text"
-                      autoComplete="address-level1"
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                      value={formData.state}
+                      onChange={handleInputChange}
+                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900"
                     />
                   </div>
                 </div>
 
                 <div className="sm:col-span-2">
                   <label
-                    htmlFor="postal-code"
+                    htmlFor="postalCode"
                     className="block text-sm/6 font-medium text-gray-900"
                   >
                     ZIP / Postal code
                   </label>
                   <div className="mt-2">
                     <input
-                      id="postal-code"
-                      name="postal-code"
+                      id="postalCode"
+                      name="postalCode"
                       type="text"
-                      autoComplete="postal-code"
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                      value={formData.postalCode}
+                      onChange={handleInputChange}
+                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900"
                     />
                   </div>
                 </div>
@@ -239,34 +285,34 @@ const Checkout = () => {
                 Choose from existing addressess
               </p>
 
-              
-
-              <ul role="list" >
+              <ul role="list">
                 {addresses.map((address) => (
                   <li
-                    key={address.phone}
+                    key={address._id}
                     className="flex justify-between gap-x-6 py-5 border-solid border-2 border-slate-200 my-1 px-4"
                   >
-                    
                     <div className="flex min-w-0 gap-x-4">
-                    <input
+                      <input
                         name="address"
                         type="radio"
                         className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden"
                       />
                       <div className="min-w-0 flex-auto">
                         <p className="text-sm/6 font-semibold text-gray-900">
-                          {address.name}
+                          {address.firstName + " " + address.lastName}
                         </p>
                         <p className="mt-1 truncate text-xs/5 text-gray-500">
-                         Phone: {address.phone}
+                          Phone: {address.phone}
                         </p>
                       </div>
                     </div>
                     <div className="hidden text-gray-500 shrink-0 sm:flex sm:flex-col sm:items-end">
-                      <p className="text-sm/6 text-gray-900">City,Pincode: {address.city}, {address.pinCode}</p>
-                      <p className="text-sm/6 text-gray-900">state: {address.state}</p>
-
+                      <p className="text-sm/6 text-gray-900">
+                        City,Pincode: {address.city}, {address.postalCode}
+                      </p>
+                      <p className="text-sm/6 text-gray-900">
+                        state: {address.state}
+                      </p>
                     </div>
                   </li>
                 ))}
@@ -314,12 +360,11 @@ const Checkout = () => {
                 </fieldset>
               </div>
             </div>
-
           </form>
         </div>
         <div className="lg:col-span-2">
-         {/* cart code */}
-     <Cart buttonLink={"/payment"} buttonText={"Pay Now"}/> 
+          {/* cart code */}
+          <Cart buttonLink={"/payment"} buttonText={"Pay Now"} />
         </div>
       </div>
     </div>

@@ -1,6 +1,18 @@
 import mongoose from 'mongoose'
 
 const addressSchema = new mongoose.Schema({
+    _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: () => new mongoose.Types.ObjectId(), // Generate a unique ID for each address
+    },
+    firstName: {
+        type: String,
+        required: true,
+    },
+    lastName: {
+        type: String,
+        required: true,
+    },
     street: {
         type: String,
         required: true,
@@ -21,6 +33,10 @@ const addressSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    phone: {
+        type: String,
+        required: true,
+    }
 });
 
 const orderSchema = new mongoose.Schema({
@@ -73,9 +89,9 @@ const userSchema = new mongoose.Schema({
     },
     orders: [orderSchema], // Embedded subdocuments for user orders
     addresses: [addressSchema], // Embedded subdocuments for user addresses
-   
+
 },
-{timestamps:true}
+    { timestamps: true }
 );
 
 //create a model
