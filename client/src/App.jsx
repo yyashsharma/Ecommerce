@@ -34,7 +34,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/cart" element={<Cart />} />
+        <Route path="/cart" element={<Cart buttonLink={"/checkout"} buttonText={"Checkout"}/>} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/product-list" element={<ProductList />} />
         <Route path="/product-details/:productId" element={<ProductDetails />} />

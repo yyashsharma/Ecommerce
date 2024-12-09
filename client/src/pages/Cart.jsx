@@ -42,7 +42,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 
 
-const Cart = () => {
+const Cart = ({buttonLink, buttonText}) => {
   const [open, setOpen] = useState(true);
   const { currentUser } = useSelector((state) => state.user);
   const [cartDetails, setCartDetails] = useState({
@@ -137,19 +137,19 @@ const Cart = () => {
     {/* cart summary */}
     <div className="mt-6 border-t border-gray-200 px-0 py-6 sm:px-0">
       <div className="flex justify-between text-base font-medium text-gray-900">
-        <p>Subtotal</p>
+        <p>Total</p>
         <p>${cartDetails.totalPrice}</p>
       </div>
       <p className="mt-0.5 text-sm text-gray-500">
-        Shipping and taxes calculated at checkout.
+        {/* Shipping and taxes calculated at checkout. */}
       </p>
       <div className="mt-6">
-        <Link
-          to="/checkout"
-          className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-        >
-          Checkout
-        </Link>
+      <Link
+            to={buttonLink}
+            className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+          >
+            {buttonText}
+          </Link>
       </div>
       <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
         <p>
