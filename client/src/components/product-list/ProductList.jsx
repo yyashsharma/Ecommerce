@@ -426,7 +426,7 @@ function LaptopFilters({ selectedCategory, handleCategoryChange }) {
   );
 }
 
-function ProductGrid({ products }) {
+export function ProductGrid({ products }) {
   return (
     <>
       {/* Product grid */}
