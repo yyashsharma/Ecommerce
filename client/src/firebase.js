@@ -5,10 +5,10 @@ import { initializeApp } from "firebase/app";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBexlSVhPWg_lhFXwR7tfPjOHX3bebMEBQ",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "ebuy-f03f8.firebaseapp.com",
   projectId: "ebuy-f03f8",
-  storageBucket: "mern-blog-ce2fa.appspot.com",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: "1024537934651",
   appId: "1:1024537934651:web:4609aafb530356f269151e"
 };

@@ -19,7 +19,7 @@ config();
 
 // const __dirname = path.resolve();
 
-export const stripe = Stripe("sk_test_51OfRY7SCwY1yayrOQIP5cjIa39K9Gc2EY1XYc9gaE2dpV1sBmvHNkXD1lHwHCntb7Pv44pt9wuDPxnISq2EHgbwr00P3vOBinh"); // Replace with your Stripe Secret Key
+export const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Replace with your Stripe Secret Key
 
 const app = express();
 

@@ -76,6 +76,7 @@ const Home = () => {
   return (
     <div>
       <div className="mx-auto max-w-6xl py-2">
+        {/* slider */}
         <div className="h-56 sm:h-64 xl:h-96">
           <Carousel pauseOnHover slideInterval={2000}>
             <img
@@ -105,6 +106,7 @@ const Home = () => {
             />
           </Carousel>
         </div>
+        {/* category section */}
         <div>
           <div className="flex justify-around bg-white p-4 shadow-lg">
             {categories.map((category, index) => (
@@ -136,6 +138,14 @@ const Home = () => {
             </Link>
           </div>
           <ProductGrid products={products} />
+        </div>
+        <div className="text-center my-5 font-semibold">
+        <Link
+              to={"/product-list"}
+              className="text-blue-600 font-semibold hover:underline"
+            >
+              View All Products
+            </Link>
         </div>
       </div>
     </div>
