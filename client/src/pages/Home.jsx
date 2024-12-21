@@ -108,7 +108,7 @@ const Home = () => {
         </div>
         {/* category section */}
         <div>
-          <div className="flex justify-around bg-white p-4 shadow-lg">
+          <div className="flex flex-wrap gap-8 lg:gap-0 justify-around bg-white p-4 shadow-lg">
             {categories.map((category, index) => (
               <a
                 key={index}
@@ -128,7 +128,7 @@ const Home = () => {
           </div>
         </div>
         <div className="py-10">
-          <div className="flex justify-between">
+          <div className="px-3 lg:px-1 flex justify-between items-center">
             <h1 className="text-3xl">Latest Products</h1>
             <Link
               to={"/product-list"}
