@@ -49,7 +49,7 @@ const FooterComponent = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Tailwind CSS
+                  Categories
                 </FooterLink>
               </FooterLinkGroup>
             </div>
@@ -61,10 +61,10 @@ const FooterComponent = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Github
+                  Brands
                 </FooterLink>
                 <FooterLink href="#" target="_blank" rel="noopener noreferrer">
-                  Discord
+                  Shopping
                 </FooterLink>
               </FooterLinkGroup>
             </div>
@@ -81,7 +81,7 @@ const FooterComponent = () => {
         <div className="w-full sm:flex sm:items-center sm:justify-between">
           <FooterCopyright
             href="#"
-            by="TECH Blog™"
+            by="EBuy™"
             year={new Date().getFullYear()}
           />
           <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">

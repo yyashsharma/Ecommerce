@@ -27,12 +27,13 @@ export const getProducts = async (req, res, next) => {
         const startIndex = parseInt(req.query.startIndex) || 0;
         const limit = parseInt(req.query.limit) || 9;
         const sortDirections = req.query.order === 'asc' ? -1 : 1;
+        const priceOrder = req.query.priceOrder === 'lowToHigh' ? 1 : req.query.priceOrder === 'highToLow' ? -1 : null;
 
         const products = await Product.find({
             ...(req.query.userId && { userId: req.query.userId }),
             ...(req.query.category && { category: req.query.category }),
             ...(req.query.productId && { _id: req.query.productId }),
-            
+
             ...(req.query.searchTerm && {
                 $or: [
                     { name: { $regex: req.query.searchTerm, $options: 'i' } },
@@ -42,7 +43,7 @@ export const getProducts = async (req, res, next) => {
                 ]
             })
         })
-            .sort({ updatedAt: sortDirections })
+            .sort(priceOrder !== null ? { price: priceOrder } : { updatedAt: sortDirections })
             .skip(startIndex)
             .limit(limit);
 

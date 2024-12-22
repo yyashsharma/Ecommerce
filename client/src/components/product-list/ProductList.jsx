@@ -24,9 +24,19 @@ import { StarIcon } from "@heroicons/react/16/solid";
 import { FaDollarSign } from "react-icons/fa";
 
 const sortOptions = [
-  { name: "Best Rating", sort: "rating", order: "desc", current: true },
-  { name: "Price: Low to High", sort: "price", order: "asc", current: false },
-  { name: "Price: High to Low", sort: "price", order: "desc", current: false },
+  // { name: "Best Rating", sort: "rating", order: "desc", current: true },
+  {
+    name: "Price: Low to High",
+    sort: "price",
+    order: "lowToHigh",
+    current: false,
+  },
+  {
+    name: "Price: High to Low",
+    sort: "price",
+    order: "highToLow",
+    current: false,
+  },
 ];
 
 const filters = [
@@ -79,9 +89,10 @@ const ProductList = () => {
       // Build query with selected category, sort option, and search term
       const queryParts = [];
       if (selectedCategory) queryParts.push(`category=${selectedCategory}`);
-      if (selectedSort) queryParts.push(`order=${selectedSort}`);
+      if (selectedSort) queryParts.push(`priceOrder=${selectedSort}`);
       if (searchTerm)
         queryParts.push(`searchTerm=${encodeURIComponent(searchTerm)}`);
+
       const query = queryParts.length > 0 ? `?${queryParts.join("&")}` : "";
 
       try {
@@ -103,14 +114,13 @@ const ProductList = () => {
     fetchPosts();
   }, [selectedCategory, selectedSort, searchTerm]); // Trigger when category, sort, or search changes
 
-
   const handleShowMore = async () => {
     const numberOfPosts = products.length;
     const startIndex = numberOfPosts;
     const urlParams = new URLSearchParams(location.search);
     urlParams.set("startIndex", startIndex);
     const searchQuery = urlParams.toString();
-    const res = await fetch(`/api/v1/post/getposts?${searchQuery}`);
+    const res = await fetch(`/api/v1/product/getProducts?${searchQuery}`);
     if (!res.ok) {
       return;
     }
@@ -192,7 +202,7 @@ const ProductList = () => {
 
               <section
                 aria-labelledby="products-heading"
-                className="pb-24 pt-6"
+                className="pb-16 pt-6"
               >
                 <h2 id="products-heading" className="sr-only">
                   Products
@@ -211,7 +221,7 @@ const ProductList = () => {
                 </div>
               </section>
               {/* Pagination section */}
-              <Pagination />
+              <Pagination showMore={showMore} handleShowMore={handleShowMore} />
             </main>
           </div>
         </div>
@@ -430,67 +440,71 @@ export function ProductGrid({ products }) {
   return (
     <>
       {/* Product grid */}
-      <div className="lg:col-span-3">
-        {/* here is the product list */}
-        <div className="bg-white">
-          <div className="mx-auto max-w-2xl px-4 py-0 sm:px-6 lg:py-0 lg:max-w-7xl lg:px-8 dark:bg-slate-700 dark:text-white">
-            <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
-              {products.map((product) => (
-                <div
-                  key={product._id}
-                  className="group relative border-sloid border-2 border-slate-100 rounded-lg p-3"
-                >
-                  <Link to={`/product-details/${product._id}`} as={"div"}>
-                    <img
-                      alt={product.name}
-                      src={product.images[0]}
-                      className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 lg:aspect-auto lg:h-80"
-                    />
-                    <div className="mt-4 flex justify-between">
-                      <div>
-                        <h3 className="text-sm text-gray-700">
-                          <span
-                            aria-hidden="true"
-                            className="absolute inset-0"
-                          />
-                          {product.name}
-                        </h3>
-                        <p className=" text-sm text-gray-500 mt-2">
-                          <StarIcon className="w-4 h-4 inline text-yellow-300 mb-1" />
-                          <span className="align-center px-1">
-                            {product.averageRating}
-                          </span>
-                        </p>
+      {products.length > 0 ? (
+        <div className="lg:col-span-3">
+          {/* here is the product list */}
+          <div className="bg-white">
+            <div className="mx-auto max-w-2xl px-4 py-0 sm:px-6 lg:py-0 lg:max-w-7xl lg:px-8 dark:bg-slate-700 dark:text-white">
+              <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
+                {products.map((product) => (
+                  <div
+                    key={product._id}
+                    className="group relative border-sloid border-2 border-slate-100 rounded-lg p-3"
+                  >
+                    <Link to={`/product-details/${product._id}`} as={"div"}>
+                      <img
+                        alt={product.name}
+                        src={product.images[0]}
+                        className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 lg:aspect-auto lg:h-80"
+                      />
+                      <div className="mt-4 flex justify-between">
+                        <div>
+                          <h3 className="text-sm text-gray-700">
+                            <span
+                              aria-hidden="true"
+                              className="absolute inset-0"
+                            />
+                            {product.name}
+                          </h3>
+                          <p className=" text-sm text-gray-500 mt-2">
+                            <StarIcon className="w-4 h-4 inline text-yellow-300 mb-1" />
+                            <span className="align-center px-1">
+                              {product.averageRating}
+                            </span>
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-red-600/10">
+                              In Stock : {product.stock}
+                            </span>
+                          </p>
+                          <p className="text-sm font-medium text-gray-900 mt-1">
+                            <span className="flex justify-center items-center">
+                              <FaDollarSign /> {product.price}
+                            </span>
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
-                          <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-red-600/10">
-                            In Stock : {product.stock}
-                          </span>
-                        </p>
-                        <p className="text-sm font-medium text-gray-900 mt-1">
-                          <span className="flex justify-center items-center">
-                            <FaDollarSign /> {product.price}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              ))}
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <h1>No products here</h1>
+      )}
     </>
   );
 }
 
-function Pagination() {
+function Pagination({ showMore, handleShowMore }) {
   return (
     <>
       {/* Pagination starts here */}
-      <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+      {/* <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
         <div className="flex flex-1 justify-between sm:hidden">
           <a
             href="#"
@@ -525,7 +539,7 @@ function Pagination() {
                 <span className="sr-only">Previous</span>
                 <ChevronLeftIcon aria-hidden="true" className="size-5" />
               </a>
-              {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
+
               <a
                 href="#"
                 aria-current="page"
@@ -556,7 +570,15 @@ function Pagination() {
             </nav>
           </div>
         </div>
-      </div>
+      </div> */}
+      {showMore && (
+        <button
+          onClick={handleShowMore}
+          className="text-teal-500 text-lg hover:underline mb-4 w-full"
+        >
+          Show More
+        </button>
+      )}
     </>
   );
 }
