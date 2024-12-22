@@ -163,6 +163,7 @@ const Checkout = () => {
       });
   
       const data = await response.json();
+      console.log(data)
       if (response.ok) {
         window.location.href = data.url; // Redirect to Stripe Checkout
         toast.success("order created")

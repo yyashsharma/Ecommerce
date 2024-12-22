@@ -27,44 +27,50 @@ export const getCartItems = async (req, res, next) => {
     }
 };
 
-//add to cart
+//add existing and update
 export const updateCartItem = async (req, res, next) => {
     try {
-        const { userId } = req.params;
-        const { productId, name, price, quantity,color,size,image } = req.body;
-
-        let cart = await Cart.findOne({ userId });
-
-        if (!cart) {
-            // If the cart does not exist, create a new one
-            cart = new Cart({ userId, items: [] });
-        }
-
-        const existingItem = cart.items.find((item) => item.productId.toString() === productId);
-        if (existingItem) {
-            // Update quantity if the item exists
-            existingItem.quantity += quantity;
+      const { userId } = req.params;
+      const { productId, name, price, quantity, color, size, image, action } = req.body;
+  
+      let cart = await Cart.findOne({ userId });
+  
+      if (!cart) {
+        // If the cart does not exist, create a new one
+        cart = new Cart({ userId, items: [] });
+      }
+  
+      const existingItem = cart.items.find((item) => item.productId.toString() === productId);
+      if (existingItem) {
+        if (action === "replace") {
+          // Replace quantity with the new quantity
+          existingItem.quantity = quantity;
         } else {
-            // Add a new item
-            cart.items.push({ productId, name, price, quantity ,color,size,image});
+          // Default: Increment quantity
+          existingItem.quantity += quantity;
         }
-
-        await cart.save();
-
-        // Calculate total price
-        const totalPrice = cart.items.reduce((total, item) => total + item.price * item.quantity, 0);
-
-        res.status(200).json({
-            success: true,
-            cart: {
-                ...cart.toObject(),
-                totalPrice, // Include calculated totalPrice
-            },
-        });
+      } else {
+        // Add a new item to the cart
+        cart.items.push({ productId, name, price, quantity, color, size, image });
+      }
+  
+      await cart.save();
+  
+      // Calculate total price
+      const totalPrice = cart.items.reduce((total, item) => total + item.price * item.quantity, 0);
+  
+      res.status(200).json({
+        success: true,
+        cart: {
+          ...cart.toObject(),
+          totalPrice, // Include calculated totalPrice
+        },
+      });
     } catch (error) {
-        next(error);
+      next(error);
     }
-};
+  };
+  
 
 
 

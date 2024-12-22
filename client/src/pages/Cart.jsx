@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  Button,
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-  DialogTitle,
-} from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { Link ,useNavigate} from "react-router-dom";
+import { Button } from "flowbite-react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -55,68 +48,157 @@ const Cart = ({ buttonLink, buttonText, buttonAction }) => {
     }
   };
 
+  // Update Quantity Logic
+  const updateQuantity = async (productId, newQuantity) => {
+    if (newQuantity < 1) {
+      return toast.warning("Quantity must be at least 1.");
+    }
+
+    try {
+      const response = await fetch(
+        `/api/v1/cart/updateCartItem/${currentUser._id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productId,
+            quantity: newQuantity, // Set the new quantity
+            action: "replace", // Specify the action as replace
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (!data.success) {
+        toast.error(data.message);
+        return;
+      }
+
+      setCartDetails(data.cart);
+      toast.success("Quantity updated successfully!");
+    } catch (error) {
+      toast.error("Failed to update quantity.");
+    }
+  };
+
+  // Remove Item Logic
+  const removeItem = async (productId) => {
+    try {
+      const response = await fetch(
+        `/api/v1/cart/removeCartItem/${currentUser._id}/${productId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await response.json();
+      if (!data.success) {
+        toast.error(data.message);
+        return;
+      }
+
+      setCartDetails(data.cart);
+      toast.success("Item removed successfully!");
+    } catch (error) {
+      toast.error("Failed to remove item.");
+    }
+  };
+
+  // Clear Cart Logic
+  const clearCart = async () => {
+    try {
+      const response = await fetch(
+        `/api/v1/cart/clearCartItems/${currentUser._id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await response.json();
+      if (!data.success) {
+        toast.error(data.message);
+        return;
+      }
+
+      setCartDetails(data.cart);
+      toast.success("Cart cleared successfully!");
+    } catch (error) {
+      toast.error("Failed to clear cart.");
+    }
+  };
+
   return cartDetails.items.length > 0 ? (
     <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 lg:px-8">
-      <div className="mt-1">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 mb-5 border-b-2 lg:mb-5">
-            Cart
-          </h1>
-        </div>
-        <div className="flow-root">
-          <ul role="list" className="-my-6 divide-y divide-gray-200">
-            {cartDetails.items.map((product) => (
-              <li key={product._id} className="flex py-6">
-                <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
-                  <img
-                    alt={product.name}
-                    src={product.image}
-                    className="size-full object-cover"
-                  />
-                </div>
-
-                <div className="ml-4 flex flex-1 flex-col">
-                  <div>
-                    <div className="flex justify-between text-base font-medium text-gray-900">
-                      <h3>
-                        <a href={product.href}>{product.name}</a>
-                      </h3>
-                      <p className="ml-4">{product.price}</p>
-                    </div>
-                    <p className="mt-1 text-sm text-gray-500">
-                      {product.color}
-                    </p>
-                  </div>
-                  <div className="flex flex-1 items-end justify-between text-sm">
-                    <div className="text-gray-500">
-                      Qty
-                      <select className="mx-5">
-                        <option value={product.quantity}>
-                          {product.quantity}
-                        </option>
-                      </select>
-                    </div>
-
-                    <div className="flex">
-                      <button
-                        type="button"
-                        className="font-medium text-indigo-600 hover:text-indigo-500"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="flex justify-between items-center border-b-2">
+        <h1 className="text-4xl font-bold mb-5 ">Cart</h1>
+        <Button
+          onClick={clearCart}
+          gradientMonochrome="failure"
+          className="rounded-md px-3 text-white"
+        >
+          Clear Cart
+        </Button>
       </div>
+      <ul role="list" className="-my-4 divide-y divide-gray-200">
+        {cartDetails.items.map((product) => (
+          <li key={product.productId} className="flex py-6">
+            <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
+              <img
+                alt={product.name}
+                src={product.image}
+                className="size-full object-cover"
+              />
+            </div>
+
+            <div className="ml-4 flex flex-1 flex-col gap-1">
+              <div className="flex justify-between text-base font-medium">
+                <h3>{product.name}</h3>
+                <p>${(product.price * product.quantity).toFixed(2)}</p>
+              </div>
+              <p className="mt-1 text-sm text-gray-500">
+                Color: {product.color}
+              </p>
+              <p className="text-sm text-gray-500">Size: {product.size}</p>
+
+              <div className="flex flex-1 items-end justify-between text-sm mt-1">
+                <div className="flex items-center space-x-2">
+                  <button
+                    className="px-2 py-1 bg-gray-300 rounded-md"
+                    onClick={() =>
+                      updateQuantity(product.productId, product.quantity - 1)
+                    }
+                  >
+                    -
+                  </button>
+                  <span className="px-2 font-semibold">{product.quantity}</span>
+                  <button
+                    className="px-2 py-1 bg-gray-300 rounded-md"
+                    onClick={() =>
+                      updateQuantity(product.productId, product.quantity + 1)
+                    }
+                  >
+                    +
+                  </button>
+                </div>
+                <button
+                  className="font-medium text-red-600 hover:text-indigo-500"
+                  onClick={() => removeItem(product.productId)}
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+
       {/* cart summary */}
       <div className="mt-6 border-t border-gray-200 px-0 py-6 sm:px-0">
-        <div className="flex justify-between text-base font-medium text-gray-900">
-          <p>Total</p>
-          <p>${cartDetails.totalPrice}</p>
+        <div className="flex gap-10 justify-end text-base font-bold text-gray-900">
+          <p className="font-bold">Total:</p>
+          <p>${cartDetails.totalPrice.toFixed(2)}</p>
         </div>
         <p className="mt-0.5 text-sm text-gray-500">
           {/* Shipping and taxes calculated at checkout. */}
@@ -124,7 +206,8 @@ const Cart = ({ buttonLink, buttonText, buttonAction }) => {
         <div className="mt-6">
           <Button
             onClick={handleClick}
-            className="flex items-center justify-center w-full rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+            gradientMonochrome="purple"
+            className="flex items-center justify-center w-full rounded-md border border-transparent px-6 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
           >
             {buttonText}
           </Button>
@@ -147,7 +230,7 @@ const Cart = ({ buttonLink, buttonText, buttonAction }) => {
       </div>
     </div>
   ) : (
-    "no items in cart"
+    <p>Your cart is empty.</p>
   );
 };
 

@@ -22,6 +22,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { StarIcon } from "@heroicons/react/16/solid";
 import { FaDollarSign } from "react-icons/fa";
+import { Button } from "flowbite-react";
 
 const sortOptions = [
   // { name: "Best Rating", sort: "rating", order: "desc", current: true },
@@ -572,12 +573,13 @@ function Pagination({ showMore, handleShowMore }) {
         </div>
       </div> */}
       {showMore && (
-        <button
+        <Button
           onClick={handleShowMore}
-          className="text-teal-500 text-lg hover:underline mb-4 w-full"
+          gradientDuoTone="purpleToBlue"
+          className="text-white text-lg hover:underline mb-4 w-50 mx-auto"
         >
           Show More
-        </button>
+        </Button>
       )}
     </>
   );
