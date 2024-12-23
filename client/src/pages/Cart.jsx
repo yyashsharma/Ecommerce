@@ -141,10 +141,10 @@ const Cart = ({ buttonLink, buttonText, buttonAction }) => {
           Clear Cart
         </Button>
       </div>
-      <ul role="list" className="-my-4 divide-y divide-gray-200">
+      <ul role="list" className="-my-4f divide-y divide-gray-200">
         {cartDetails.items.map((product) => (
           <li key={product.productId} className="flex py-6">
-            <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
+            <div className="size-28 shrink-0 overflow-hidden rounded-md border border-gray-200">
               <img
                 alt={product.name}
                 src={product.image}

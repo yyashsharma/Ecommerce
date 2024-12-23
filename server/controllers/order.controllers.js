@@ -35,10 +35,7 @@ export const createOrder = async (req, res) => {
 
         // Get the created order ID
         const createdOrderID = savedUser.orders[savedUser.orders.length - 1];
-        console.log("orderid", createdOrderID._id);  // Should now log the correct ID
 
-        const redirectUrl= `${process.env.CLIENT_URL}/payment/success?order_id=${createdOrderID._id}`;
-        console.log("redirectUrl",redirectUrl)
 
         if (paymentMethod === 'Cash') {
             // Redirect to success page with order ID for cash payment
