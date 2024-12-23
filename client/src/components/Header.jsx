@@ -19,8 +19,11 @@ const Header = () => {
 
   const { currentUser } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
+  const [loading, setLoading] = useState(false);
 
   const [inputValue, setInputValue] = useState(""); // State to track input value
+
+  const [totalCartItems, setTotalCartItems] = useState(0);
 
   const navigate = useNavigate();
 
@@ -31,6 +34,32 @@ const Header = () => {
   //     setSearchTerm(searchTermForUrl);
   //   }
   // }, [location.search]);
+
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      if (!currentUser || !currentUser._id) {
+        // If currentUser is null or _id is not defined, return early
+        totalCartItems(0); // Reset cart details
+        return;
+      }
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/v1/cart/getCartItems/${currentUser._id}`);
+
+        const data = await res.json();
+        if (data.success === false) {
+          return toast.error(data.message);
+        }
+        setTotalCartItems(data.cart.totalCartItems);
+        console.log(totalCartItems);
+        setLoading(false);
+      } catch (error) {
+        toast.error(error);
+        setLoading(false);
+      }
+    };
+    fetchCartItems();
+  }, [currentUser]);
 
   const dispatch = useDispatch();
 
@@ -98,7 +127,7 @@ const Header = () => {
           </Button>
         </div>
       </form>
-      
+
       <div className="flex gap-4 mt-4 lg:mt-0 md:order-2 ">
         <Button
           gradientDuoTone="purpleToBlue"
@@ -115,17 +144,21 @@ const Header = () => {
           >
             <ShoppingCartIcon className="h-6 w-6 mt-2 mx-4" />
             <span className="inline-flex items-center mb-5 -ml-7 rounded-md bg-red-50 px-2  text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
-              7
+              {totalCartItems}
             </span>
           </Button>
         </Link>
 
         {currentUser ? (
           <Dropdown
-            arrowIcon={false}
+            arrowIcon={true}
             inline
             label={
-              <Avatar alt="user" img={currentUser.profilePicture} rounded />
+              currentUser.profilePicture ? (
+                <Avatar img={currentUser.profilePicture} alt="user" rounded />
+              ) : (
+                <Avatar rounded/>
+              )
             }
           >
             <Dropdown.Header>
@@ -148,7 +181,7 @@ const Header = () => {
             </Button>
           </Link>
         )}
-        <Navbar.Toggle className="ml-44"/>
+        <Navbar.Toggle className="ml-44" />
       </div>
       <Navbar.Collapse>
         <Navbar.Link active={path === "/"} as={"div"}>

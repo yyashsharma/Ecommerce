@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { FaDollarSign } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { Button } from "flowbite-react";
 
 const reviews = { href: "#", average: 4, totalCount: 117 };
 
@@ -68,10 +69,9 @@ const ProductDetails = () => {
         price: product.price,
         quantity: 1,
         color: selectedColor,
-        size: selectedSize?selectedSize:"" ,
+        size: selectedSize ? selectedSize : "",
         image: product.images[0],
       });
-    
     } catch (error) {
       toast.error("Failed to add to cart");
     }
@@ -83,25 +83,37 @@ const ProductDetails = () => {
         {/* Image gallery */}
         <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
           <img
-            alt={product.images[0]}
-            src={product.images[0]}
+            alt={"sorry,there is no image"}
+            src={
+              product.images[0] ||
+              "https://cdn.pixabay.com/photo/2015/10/31/12/29/shopping-1015559_1280.jpg"
+            }
             className="hidden aspect-[3/4] size-full rounded-lg object-cover lg:block"
           />
           <div className="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
             <img
-              alt={product.images[1]}
-              src={product.images[1]}
+              alt={"sorry,there is no image"}
+              src={
+                product.images[1] ||
+                "https://cdn.pixabay.com/photo/2015/10/31/12/29/shopping-1015559_1280.jpg"
+              }
               className="aspect-[3/2] size-full rounded-lg object-cover"
             />
             <img
-              alt={product.images[2]}
-              src={product.images[2]}
+              alt={"sorry,there is no image"}
+              src={
+                product.images[2] ||
+                "https://cdn.pixabay.com/photo/2015/10/31/12/29/shopping-1015559_1280.jpg"
+              }
               className="aspect-[3/2] size-full rounded-lg object-cover"
             />
           </div>
           <img
-            alt={product.images[3]}
-            src={product.images[3]}
+            alt={"sorry,there is no image"}
+            src={
+              product.images[3] ||
+              "https://cdn.pixabay.com/photo/2015/10/31/12/29/shopping-1015559_1280.jpg"
+            }
             className="aspect-[4/5] size-full object-cover sm:rounded-lg lg:aspect-[3/4]"
           />
         </div>
@@ -161,21 +173,26 @@ const ProductDetails = () => {
                     value={selectedColor}
                     onChange={setSelectedColor}
                   >
-                    {product.colors.map((color, index) => (
-                      <Radio
-                        key={index} // You can use the index as the key
-                        value={color}
-                        aria-label={color}
-                        className={classNames(
-                          "relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none data-[checked]:ring-2 data-[focus]:data-[checked]:ring data-[focus]:data-[checked]:ring-offset-1"
-                        )}
-                      >
-                        <span
-                          aria-hidden="true"
-                          className={`size-8 rounded-full border border-black/10 bg-${color}`}
-                        />
-                      </Radio>
-                    ))}
+                    {product.colors.length > 0 ? (
+                      product.colors.map((color, index) => (
+                        <Radio
+                          key={index} // You can use the index as the key
+                          value={color}
+                          aria-label={color}
+                          className={classNames(
+                            "relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none data-[checked]:ring-2 data-[focus]:data-[checked]:ring data-[focus]:data-[checked]:ring-offset-1"
+                          )}
+                        >
+                          <span
+                            aria-hidden="true"
+                            className={`size-8 rounded-full border border-black/10 `}
+                            style={{ backgroundColor: color }}
+                          />
+                        </Radio>
+                      ))
+                    ):(
+                      <p>no colors available</p>
+                    )}
                   </RadioGroup>
                 </fieldset>
               </div>
@@ -198,33 +215,37 @@ const ProductDetails = () => {
                     value={selectedSize}
                     onChange={setSelectedSize}
                   >
-                    {product.sizes.map((size) => (
-                      <Radio
-                        key={size} // Use size as the key if it's unique
-                        value={size}
-                        className={
-                          "cursor-pointer bg-white text-gray-900 shadow-sm group relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none data-[focus]:ring-2 data-[focus]:ring-indigo-500 sm:flex-1 sm:py-6"
-                        }
-                      >
-                        <span>{size}</span> {/* Display the size name */}
-                        <span
-                          aria-hidden="true"
-                          className="pointer-events-none absolute -inset-px rounded-md border-2 border-transparent group-data-[focus]:border group-data-[checked]:border-indigo-500"
-                        />
-                      </Radio>
-                    ))}
+                    {product.sizes.length > 0 ? (
+                      product.sizes.map((size) => (
+                        <Radio
+                          key={size} // Use size as the key if it's unique
+                          value={size}
+                          className={
+                            "cursor-pointer bg-white text-gray-900 shadow-sm group relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none data-[focus]:ring-2 data-[focus]:ring-indigo-500 sm:flex-1 sm:py-6"
+                          }
+                        >
+                          <span>{size}</span> {/* Display the size name */}
+                          <span
+                            aria-hidden="true"
+                            className="pointer-events-none absolute -inset-px rounded-md border-2 border-transparent group-data-[focus]:border group-data-[checked]:border-indigo-500"
+                          />
+                        </Radio>
+                      ))
+                    ) : (
+                      <p>no sizes available</p>
+                    )}
                   </RadioGroup>
                 </fieldset>
               </div>
 
-              <button
-              type="button"
-              onClick={handleAddToCart}
-              className="mt-10 flex w-full items-center justify-center rounded-md bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700"
-            >
-              Add to cart
-            </button>
-
+              <Button
+                type="button"
+                gradientMonochrome="purple"
+                onClick={handleAddToCart}
+                className="mt-10 flex w-full items-center justify-center rounded-md  px-8 py-2 text-base font-medium text-white"
+              >
+                Add to cart
+              </Button>
             </form>
           </div>
 
@@ -249,7 +270,7 @@ const ProductDetails = () => {
   );
 };
 
- const updateCartItem = async (userId, cartItem) => {
+const updateCartItem = async (userId, cartItem) => {
   try {
     const response = await fetch(`/api/v1/cart/updateCartItem/${userId}`, {
       method: "POST",
@@ -278,6 +299,5 @@ const ProductDetails = () => {
     throw error; // Rethrow error for further handling if needed
   }
 };
-
 
 export default ProductDetails;
