@@ -1,4 +1,4 @@
-import { Carousel } from "flowbite-react";
+import { Button, Carousel } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { ProductGrid } from "../components/product-list/ProductList";
 import { Link } from "react-router-dom";
@@ -130,22 +130,26 @@ const Home = () => {
         <div className="py-10">
           <div className="px-3 lg:px-1 flex justify-between items-center">
             <h1 className="text-3xl">Latest Products</h1>
-            <Link
-              to={"/product-list"}
-              className="text-blue-600 font-semibold hover:underline"
-            >
-              Explore All Products
-            </Link>
+            <Button gradientDuoTone="tealToLime">
+              <Link
+                to={"/product-list"}
+                className="text-slate-900 font-semibold hover:underline"
+              >
+                Explore All Products
+              </Link>
+            </Button>
           </div>
           <ProductGrid products={products} />
         </div>
-        <div className="text-center my-5 font-semibold">
-        <Link
+        <div className="text-center my-5 font-semibold ">
+          <Button gradientDuoTone="tealToLime" className="w-50 mx-auto">
+            <Link
               to={"/product-list"}
-              className="text-blue-600 font-semibold hover:underline"
+              className="text-slate-900 font-semibold hover:underline"
             >
               View All Products
             </Link>
+          </Button>
         </div>
       </div>
     </div>

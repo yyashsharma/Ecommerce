@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import Cart from "./Cart";
 import { useSelector } from "react-redux";
+import { Button } from "flowbite-react";
 
 const Checkout = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -41,6 +42,18 @@ const Checkout = () => {
   };
 
   const addAddress = async (newAddress) => {
+    if (
+      !newAddress.firstName.trim() &&
+      !newAddress.lastName.trim() &&
+      !newAddress.street.trim() &&
+      !newAddress.city.trim() &&
+      !newAddress.state.trim() &&
+      !newAddress.postalCode.trim() &&
+      !newAddress.country.trim() &&
+      !newAddress.phone.trim()
+    ) {
+      return toast.error("Please fill all fields");
+    }
     try {
       const response = await fetch(
         `/api/v1/address/addNewAddress/${currentUser._id}`,
@@ -105,7 +118,6 @@ const Checkout = () => {
     fetchCartProducts();
   }, [currentUser]);
 
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -122,8 +134,7 @@ const Checkout = () => {
     setPaymentMethod(e.target.value);
   };
 
- 
-  const handlePayment = async() => {
+  const handlePayment = async () => {
     if (!selectedAddress) {
       toast.error("Please select an address bro");
       return;
@@ -134,21 +145,20 @@ const Checkout = () => {
     }
 
     // Save details to localStorage or pass via query params/state
-    const checkoutDetails = {
-      selectedAddress,
-      paymentMethod,
-    };
-    localStorage.setItem("checkoutDetails", JSON.stringify(checkoutDetails));
-
+    // const checkoutDetails = {
+    //   selectedAddress,
+    //   paymentMethod,
+    // };
+    // localStorage.setItem("checkoutDetails", JSON.stringify(checkoutDetails));
 
     // Redirect to Razorpay payment page
     // window.location.href = "/payment";
 
     try {
-      const response = await fetch('/api/v1/order/create-order', {
-        method: 'POST',
+      const response = await fetch("/api/v1/order/create-order", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId: currentUser._id,
@@ -158,24 +168,28 @@ const Checkout = () => {
           })),
           totalPrice: cartDetails.totalPrice,
           addressId: selectedAddress,
-          paymentMethod
+          paymentMethod,
         }),
       });
-  
+
       const data = await response.json();
-      console.log(data)
       if (response.ok) {
-        window.location.href = data.url; // Redirect to Stripe Checkout
-        toast.success("order created")
-      } else {
-        toast.error(data.message || 'Payment initiation failed');
-      }
-    } catch (error) {
-      console.error('Error:', error.message);
-      toast.error('An error occurred. Please try again.');
+        if (paymentMethod === 'Cash') {
+            // If payment is cash, redirect to success URL with order ID
+            window.location.href = data.redirectUrl; // Use the redirect URL from the response
+            toast.success("Order created successfully");
+        } else {
+            // If payment is card, redirect to Stripe checkout URL
+            window.location.href = data.url; // Assuming 'data.url' contains the Stripe URL
+            toast.success("Redirecting to payment...");
+        }
+    } else {
+        toast.error(data.message || "Payment initiation failed");
     }
-
-
+    } catch (error) {
+      console.error("Error:", error.message);
+      toast.error("An error occurred. Please try again.");
+    }
   };
 
   return (
@@ -183,11 +197,11 @@ const Checkout = () => {
       <div className="grid grid-cols-1 gap-x-8 gap-y-4 px-5 lg:grid-cols-5 lg:gap-y-10">
         <div className="lg:col-span-3">
           <form onSubmit={handleSubmit}>
-            <div className="border-b border-gray-900/10 pb-12">
-              <h1 className="text-2xl font-semibold text-gray-900">
-                Personal Information
+            <div className="">
+              <h1 className="text-2xl font-bold text-gray-900">
+                Shipping Information
               </h1>
-              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-6">
                 <div className="sm:col-span-3">
                   <label
                     htmlFor="first-name"
@@ -350,28 +364,29 @@ const Checkout = () => {
                 </div>
               </div>
             </div>
-            <div className="mt-6 flex items-center justify-end gap-x-6">
-              <button
+            <div className="mt-6 flex items-center justify-end gap-x-6 border-b border-gray-900/10 pb-4">
+              {/* <button
                 type="button"
                 className="text-sm/6 font-semibold text-gray-900"
               >
                 Cancel
-              </button>
-              <button
+              </button> */}
+              <Button
                 type="submit"
-                className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                gradientDuoTone="purpleToBlue"
+                className="rounded-md  px-3  text-sm font-semibold text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               >
                 Save Address
-              </button>
+              </Button>
             </div>
           </form>
-          <div className="pb:4 lg:pb-12">
-            <h2 className="text-base/7 font-semibold text-gray-900">Address</h2>
+          <div className="pb:4 mt-4 lg:pb-12">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Address</h2>
             <p className="mt-1 text-sm/6 text-gray-600">
               Choose from existing addressess
             </p>
 
-            <ul role="list">
+            <ul role="list" className="border-b border-gray-900/10 pb-4 mt-4">
               {addresses.map((address) => (
                 <li
                   key={address._id}
@@ -406,15 +421,15 @@ const Checkout = () => {
               ))}
             </ul>
 
-            <div className="mt-10 space-y-10">
+            <div className="mt-6 space-y-10">
               <fieldset>
-                <legend className="text-sm/6 font-semibold text-gray-900">
+                <legend className="text-xl font-bold text-gray-900">
                   Payment Methods
                 </legend>
                 <p className="mt-1 text-sm/6 text-gray-600">
                   Choose one from below methods
                 </p>
-                <div className="mt-6 space-y-6">
+                <div className="mt-4 space-y-6">
                   <div className="flex items-center gap-x-3">
                     <input
                       id="card"
