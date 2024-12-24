@@ -3,6 +3,7 @@ import { Button } from "flowbite-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
+import EmptyCart from "../components/EmptyCart";
 
 const Cart = ({ buttonLink, buttonText, buttonAction }) => {
   const [open, setOpen] = useState(true);
@@ -230,7 +231,7 @@ const Cart = ({ buttonLink, buttonText, buttonAction }) => {
       </div>
     </div>
   ) : (
-    <p>Your cart is empty.</p>
+   <EmptyCart />
   );
 };
 
