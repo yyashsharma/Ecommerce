@@ -20,6 +20,7 @@ import CreateProduct from "./pages/CreateProduct";
 import OnlyAdminPrivateRoute from "./components/OnlyAdminPrivateRoute";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
+import OrderPlacedSuccess from "./pages/OrderPlacedSuccess";
 // import UpdatePost from "./pages/UpdatePost";
 // import PostPage from "./pages/PostPage";
 // import ScrollToTop from "./components/ScrollToTop";
@@ -41,6 +42,7 @@ function App() {
         <Route path="/product-list" element={<ProductList />} />
         <Route path="/payment/success" element={<PaymentSuccess />} />
         <Route path="/payment/cancel" element={<PaymentCancel/>} />
+        <Route path="/order-placed/success" element={<OrderPlacedSuccess/>} />
         <Route path="/product-details/:productId" element={<ProductDetails />} />
 
         {/* <Route element={<PrivateRoute />}>

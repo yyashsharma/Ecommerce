@@ -88,18 +88,23 @@ export const deleteAddress = async (req, res, next) => {
         if (!user) {
             return next(errorHandler(404, "User not found"));
         }
-        req.user = user;
 
-        const address = req.user.addresses.id(req.params.addressId);
-        if (!address) {
+        // Find the index of the address in the addresses array
+        const addressIndex = user.addresses.findIndex(
+            (address) => address._id.toString() === req.params.addressId
+        );
+
+        if (addressIndex === -1) {
             return res.status(404).json({ message: "Address not found" });
         }
 
-        address.remove();
-        await req.user.save();
+        // Remove the address by index
+        user.addresses.splice(addressIndex, 1);
+
+        // Save the updated user
+        await user.save();
 
         res.status(200).json({ message: "Address deleted" });
-
     } catch (error) {
         next(error);
     }

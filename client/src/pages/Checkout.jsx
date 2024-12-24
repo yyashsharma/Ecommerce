@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Cart from "./Cart";
 import { useSelector } from "react-redux";
 import { Button } from "flowbite-react";
+import { FaCross } from "react-icons/fa";
+import { AiFillDelete } from "react-icons/ai";
 
 const Checkout = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -174,23 +176,51 @@ const Checkout = () => {
 
       const data = await response.json();
       if (response.ok) {
-        if (paymentMethod === 'Cash') {
-            // If payment is cash, redirect to success URL with order ID
-            window.location.href = data.redirectUrl; // Use the redirect URL from the response
-            toast.success("Order created successfully");
+        if (paymentMethod === "Cash") {
+          // If payment is cash, redirect to success URL with order ID
+          window.location.href = data.redirectUrl; // Use the redirect URL from the response
+          toast.success("Order created successfully");
         } else {
-            // If payment is card, redirect to Stripe checkout URL
-            window.location.href = data.url; // Assuming 'data.url' contains the Stripe URL
-            toast.success("Redirecting to payment...");
+          // If payment is card, redirect to Stripe checkout URL
+          window.location.href = data.url; // Assuming 'data.url' contains the Stripe URL
+          toast.success("Redirecting to payment...");
         }
-    } else {
+      } else {
         toast.error(data.message || "Payment initiation failed");
-    }
+      }
     } catch (error) {
       console.error("Error:", error.message);
       toast.error("An error occurred. Please try again.");
     }
   };
+
+  const handleDeleteAddress = async (addressId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this address?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(
+        `/api/v1/address/deleteAddress/${currentUser._id}/${addressId}`,
+        {
+          method: "DELETE",
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+      setAddresses((prevAddresses) =>
+        prevAddresses.filter((address) => address._id !== addressId)
+      );
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  console.log(selectedAddress)
 
   return (
     <div className="mx-auto max-w-6xl px-1 py-4 sm:px-6 lg:px-8">
@@ -390,7 +420,7 @@ const Checkout = () => {
               {addresses.map((address) => (
                 <li
                   key={address._id}
-                  className="flex justify-between gap-x-6 py-5 border-solid border-2 border-slate-200 my-1 px-4"
+                  className="flex justify-between gap-x-4  py-5 border-solid border-2 border-slate-200 my-1 px-4"
                 >
                   <div className="flex min-w-0 gap-x-4">
                     <input
@@ -409,7 +439,7 @@ const Checkout = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="hidden text-gray-500 shrink-0 sm:flex sm:flex-col sm:items-end">
+                  <div className=" text-gray-500 shrink-0 sm:flex sm:flex-col sm:items-end">
                     <p className="text-sm/6 text-gray-900">
                       City,Pincode: {address.city}, {address.postalCode}
                     </p>
@@ -417,6 +447,13 @@ const Checkout = () => {
                       state: {address.state}
                     </p>
                   </div>
+                  <Button
+                    gradientMonochrome="failure"
+                    onClick={() => handleDeleteAddress(address._id)}
+                    className="rounded-md w text-white w-8 h-8 flex items-center justify-center hover:scale-110"
+                  >
+                    <AiFillDelete />
+                  </Button>
                 </li>
               ))}
             </ul>

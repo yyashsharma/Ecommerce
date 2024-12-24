@@ -42,7 +42,7 @@ export const createOrder = async (req, res) => {
             console.log(createdOrderID._id)
             return res.status(200).json({
                 message: 'Order created successfully',
-                redirectUrl: `${process.env.CLIENT_URL}/payment/success?order_id=${createdOrderID._id}`,
+                redirectUrl: `${process.env.CLIENT_URL}/order-placed/success?order_id=${createdOrderID._id}`,
             });
         }
 
