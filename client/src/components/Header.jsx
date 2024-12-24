@@ -51,7 +51,6 @@ const Header = () => {
           return toast.error(data.message);
         }
         setTotalCartItems(data.cart.totalCartItems);
-        console.log(totalCartItems);
         setLoading(false);
       } catch (error) {
         toast.error(error);

@@ -4,30 +4,42 @@ import { User } from "../models/user.model.js";
 
 export const addNewAddress = async (req, res, next) => {
     try {
+        // Find the user by ID
         const user = await User.findById(req.params.userId);
         if (!user) {
             return next(errorHandler(404, "User not found"));
         }
-        req.user = user;
 
-
+        // Validate the incoming data
         const { firstName, lastName, street, city, state, postalCode, country, phone } = req.body;
-
         if (!firstName || !lastName || !street || !city || !state || !postalCode || !country || !phone) {
             return next(errorHandler(400, "All fields are required"));
-
         }
 
-        const newAddress = { firstName, lastName, street, city, state, postalCode, country, phone };
-        req.user.addresses.push(newAddress);
-        await req.user.save();
+        // Create and add the new address
+        const newAddress = {
+            firstName,
+            lastName,
+            street,
+            city,
+            state,
+            postalCode,
+            country,
+            phone,
+        };
+        user.addresses.push(newAddress);
+        await user.save();
 
-        res.status(201).json({ message: "Address added", address: newAddress });
+        // Retrieve the newly added address (with its _id)
+        const addedAddress = user.addresses[user.addresses.length - 1];
 
+        // Send the response
+        res.status(201).json({ message: "Address added", address: addedAddress });
     } catch (error) {
         next(error);
     }
 };
+
 
 
 export const getAllAddress = async (req, res, next) => {

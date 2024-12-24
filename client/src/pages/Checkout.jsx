@@ -73,6 +73,9 @@ const Checkout = () => {
       const addedAddress = await response.json();
 
       setAddresses((prevAddresses) => [...prevAddresses, addedAddress.address]);
+
+      // Set the new address as selected
+      setSelectedAddress(addedAddress.address._id);
       toast.success("new address added");
     } catch (error) {
       toast.error(error.message);
@@ -156,7 +159,6 @@ const Checkout = () => {
     // Redirect to Razorpay payment page
     // window.location.href = "/payment";
 
-
     try {
       const response = await fetch("/api/v1/order/create-order", {
         method: "POST",
@@ -220,8 +222,6 @@ const Checkout = () => {
       toast.error(error.message);
     }
   };
-
-  // console.log(cartDetails)
 
   return (
     <div className="mx-auto max-w-6xl px-1 py-4 sm:px-6 lg:px-8">
