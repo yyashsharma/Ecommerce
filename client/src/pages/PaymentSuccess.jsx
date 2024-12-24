@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { useLocation } from "react-router-dom";
 import { Button } from "flowbite-react";
+import { toast } from "react-toastify";
 
 const PaymentSuccess = () => {
   const location = useLocation();
@@ -13,33 +14,33 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     const updatePaymentStatus = async () => {
-      if (!sessionId || !orderId) {
-        toast.error("Missing payment details");
-        return;
-      }
-
-      try {
-        const response = await fetch("/api/v1/payment/handlePaymentSuccess", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ session_id: sessionId, order_id: orderId }),
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-          toast.success("Payment successful! Order updated.");
-        } else {
-          toast.error(data.message || "Failed to update payment status.");
+        if (!sessionId || !orderId) {
+            toast.error("Missing payment details");
+            return;
         }
-      } catch (error) {
-        toast.error("An error occurred while updating payment status.");
-      }
+
+        try {
+            const response = await fetch("/api/v1/payment/handlePaymentSuccess", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ session_id: sessionId, order_id: orderId }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                toast.success("Payment successful! Order updated and stock adjusted.");
+            } else {
+                toast.error(data.message || "Failed to update payment status.");
+            }
+        } catch (error) {
+            toast.error("An error occurred while updating payment status.");
+        }
     };
 
     updatePaymentStatus();
-  }, [orderId, sessionId]);
+}, [orderId, sessionId]);
 
   return (
     <div className="min-h-screen  flex flex-col justify-center items-center bg-gradient-to-br from-green-200 to-green-500">

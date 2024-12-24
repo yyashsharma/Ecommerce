@@ -156,6 +156,7 @@ const Checkout = () => {
     // Redirect to Razorpay payment page
     // window.location.href = "/payment";
 
+
     try {
       const response = await fetch("/api/v1/order/create-order", {
         method: "POST",
@@ -165,7 +166,7 @@ const Checkout = () => {
         body: JSON.stringify({
           userId: currentUser._id,
           products: cartDetails.items.map((item) => ({
-            productId: item._id,
+            productId: item.productId,
             quantity: item.quantity,
           })),
           totalPrice: cartDetails.totalPrice,
@@ -220,7 +221,7 @@ const Checkout = () => {
     }
   };
 
-  console.log(selectedAddress)
+  // console.log(cartDetails)
 
   return (
     <div className="mx-auto max-w-6xl px-1 py-4 sm:px-6 lg:px-8">

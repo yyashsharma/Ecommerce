@@ -44,8 +44,6 @@ export const createOrder = async (req, res) => {
         // Get the created order ID
         const createdOrderID = savedUser.orders[savedUser.orders.length - 1];
 
-
-
         if (paymentMethod === 'Cash') {
             // Update payment status for Cash on Delivery
             const orderIndex = user.orders.findIndex(order => order._id.toString() === createdOrderID._id.toString());
@@ -54,6 +52,24 @@ export const createOrder = async (req, res) => {
                 user.orders[orderIndex].paymentStatus = "cashOnDelivery";
                 await user.save();
             }
+
+            // Update stock for each product in the order
+            for (const item of products) {
+                const product = await Product.findById(item.productId);
+                if (!product) continue; // Skip if product is not found
+
+                // Ensure stock does not go negative
+                if (product.stock < item.quantity) {
+                    return res.status(400).json({
+                        message: `Insufficient stock for product: ${product.name}`,
+                    });
+                }
+
+                product.stock -= item.quantity; // Deduct the quantity
+                await product.save();
+                console.log(product.stock)
+            }
+
             // Redirect to success page with order ID for cash payment
             return res.status(200).json({
                 message: 'Order created successfully',
@@ -62,16 +78,6 @@ export const createOrder = async (req, res) => {
         }
 
         // Initiate Stripe Payment
-        // const lineItems = products.map((item) => ({
-        //     price_data: {
-        //         currency: 'usd',
-        //         product_data: {
-        //             name: `Product ID: ${item.productId}`, // Replace with actual product name if available
-        //         },
-        //         unit_amount: Math.round(( totalPrice / products.length) * 100), // Calculate price correctly
-        //     },
-        //     quantity: item.quantity,
-        // }));
         const lineItems = [
             {
                 price_data: {
@@ -100,12 +106,12 @@ export const createOrder = async (req, res) => {
 
         res.status(200).json({ url: session.url });
 
-
     } catch (error) {
         console.error('Error creating order:', error.message);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
 
 
 
