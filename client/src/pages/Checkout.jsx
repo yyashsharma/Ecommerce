@@ -498,7 +498,7 @@ const Checkout = () => {
                       htmlFor="cash"
                       className="block text-sm/6 font-medium text-gray-900"
                     >
-                      Cash
+                      Cash On Delivery
                     </label>
                   </div>
                 </div>

@@ -1,7 +1,46 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
+import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const PaymentCancel = () => {
+  const location = useLocation();
+
+  // Extract query parameters
+  const queryParams = new URLSearchParams(location.search);
+  const orderId = queryParams.get("order_id");
+  console.log(orderId)
+
+  useEffect(() => {
+    const updatePaymentStatus = async () => {
+      if (!orderId) {
+        toast.error("Missing order details");
+        return;
+      }
+
+      try { 
+        const response = await fetch("/api/v1/payment/handlePaymentFailed", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({orderId }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          toast.error("Payment canceled. Order updated.");
+        } else {
+          toast.error(data.message || "Failed to update payment status.");
+        }
+      } catch (error) {
+        toast.error("An error occurred while updating payment status.");
+      }
+    };
+
+    updatePaymentStatus();
+  }, [orderId]);
+
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-red-200 to-red-500">
       <div className="bg-white p-6 rounded-lg shadow-lg transform transition-all scale-105">

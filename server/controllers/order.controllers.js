@@ -3,6 +3,7 @@ import { Product } from "../models/product.model.js";
 import { User } from "../models/user.model.js";
 import { errorHandler } from "../utils/error.js"
 import { stripe } from "../index.js";
+import { Cart } from "../models/cart.model.js";
 
 export const createOrder = async (req, res) => {
     try {
@@ -33,13 +34,27 @@ export const createOrder = async (req, res) => {
         user.orders.push(newOrder);
         const savedUser = await user.save();
 
+        // Clear the cart for the user
+        const cart = await Cart.findOne({ userId });
+        if (cart) {
+            cart.items = []; // Clear all items
+            await cart.save();
+        }
+
         // Get the created order ID
         const createdOrderID = savedUser.orders[savedUser.orders.length - 1];
 
 
+
         if (paymentMethod === 'Cash') {
+            // Update payment status for Cash on Delivery
+            const orderIndex = user.orders.findIndex(order => order._id.toString() === createdOrderID._id.toString());
+
+            if (orderIndex !== -1) {
+                user.orders[orderIndex].paymentStatus = "cashOnDelivery";
+                await user.save();
+            }
             // Redirect to success page with order ID for cash payment
-            console.log(createdOrderID._id)
             return res.status(200).json({
                 message: 'Order created successfully',
                 redirectUrl: `${process.env.CLIENT_URL}/order-placed/success?order_id=${createdOrderID._id}`,
@@ -76,7 +91,7 @@ export const createOrder = async (req, res) => {
             line_items: lineItems,
             mode: 'payment',
             success_url: `${process.env.CLIENT_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}&order_id=${createdOrderID._id}`,
-            cancel_url: `${process.env.CLIENT_URL}/payment/cancel`,
+            cancel_url: `${process.env.CLIENT_URL}/payment/cancel?order_id=${createdOrderID._id}`,
             metadata: {
                 userId,
                 orderId: createdOrderID._id.toString(),
@@ -91,4 +106,7 @@ export const createOrder = async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
+
+
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { useLocation } from "react-router-dom";
 import { Button } from "flowbite-react";
@@ -9,6 +9,37 @@ const PaymentSuccess = () => {
   // Extract query parameters
   const queryParams = new URLSearchParams(location.search);
   const orderId = queryParams.get("order_id");
+  const sessionId = queryParams.get("session_id");
+
+  useEffect(() => {
+    const updatePaymentStatus = async () => {
+      if (!sessionId || !orderId) {
+        toast.error("Missing payment details");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/v1/payment/handlePaymentSuccess", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ session_id: sessionId, order_id: orderId }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          toast.success("Payment successful! Order updated.");
+        } else {
+          toast.error(data.message || "Failed to update payment status.");
+        }
+      } catch (error) {
+        toast.error("An error occurred while updating payment status.");
+      }
+    };
+
+    updatePaymentStatus();
+  }, [orderId, sessionId]);
 
   return (
     <div className="min-h-screen  flex flex-col justify-center items-center bg-gradient-to-br from-green-200 to-green-500">
