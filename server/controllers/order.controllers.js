@@ -112,6 +112,34 @@ export const createOrder = async (req, res) => {
     }
 };
 
+export const getOrders = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Validate userId
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        }
+
+        // Find the user
+        const user = await User.findById(userId).select('orders'); // Fetch only the orders field
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Filter orders by paymentStatus
+        const filteredOrders = user.orders.filter(order => 
+            order.paymentStatus === 'cashOnDelivery' || order.paymentStatus === 'paid'
+        ).sort((a, b) => b.orderDate - a.orderDate); // Sort by orderDate in descending orders
+
+        res.status(200).json({ orders: filteredOrders });
+    } catch (error) {
+        console.error('Error fetching orders:', error.message);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+
 
 
 

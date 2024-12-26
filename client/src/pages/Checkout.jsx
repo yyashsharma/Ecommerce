@@ -170,6 +170,9 @@ const Checkout = () => {
           products: cartDetails.items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
+            price: item.price,
+            name: item.name,
+            image: item.image,
           })),
           totalPrice: cartDetails.totalPrice,
           addressId: selectedAddress,
@@ -220,8 +223,10 @@ const Checkout = () => {
       toast.success(data.message);
     } catch (error) {
       toast.error(error.message);
+      console.log(error)
     }
   };
+
 
   return (
     <div className="mx-auto max-w-6xl px-1 py-4 sm:px-6 lg:px-8">

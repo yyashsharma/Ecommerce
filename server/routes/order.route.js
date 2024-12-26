@@ -1,12 +1,12 @@
 import express from 'express'
 import { verifyToken } from '../utils/verifyUser.js';
-import { createOrder } from '../controllers/order.controllers.js';
+import { createOrder, getOrders } from '../controllers/order.controllers.js';
 
 const router = express.Router();
 
 router.post('/create-order', createOrder)
 
-// router.get('/getproducts', getProducts)
+router.get('/getOrders/:userId', getOrders)
 
 // router.delete('/deleteproduct/:productId/:userId', verifyToken, deleteProduct)
 

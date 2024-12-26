@@ -1,7 +1,7 @@
 import express from 'express'
 import { connectDb } from './utils/db.js';
 import { config } from 'dotenv'
-// import userRoutes from './routes/user.route.js'
+import userRoutes from './routes/user.route.js'
 import authRoutes from './routes/auth.route.js'
 import productRoutes from './routes/product.route.js'
 import cartRoutes from './routes/cart.route.js'
@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/v1/auth', authRoutes)
-// app.use('/api/v1/user', userRoutes)
+app.use('/api/v1/user', userRoutes)
 app.use('/api/v1/product', productRoutes)
 app.use('/api/v1/cart', cartRoutes)
 app.use('/api/v1/address', addressRoutes)
