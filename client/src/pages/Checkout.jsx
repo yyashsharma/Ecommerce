@@ -141,7 +141,7 @@ const Checkout = () => {
 
   const handlePayment = async () => {
     if (!selectedAddress) {
-      toast.error("Please select an address bro");
+      toast.error("Please select an address");
       return;
     }
     if (!paymentMethod) {

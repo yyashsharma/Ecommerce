@@ -62,11 +62,11 @@ const PaymentSuccess = () => {
 
           <div className="mt-6 text-center flex justify-center">
             <Button
-              onClick={() => (window.location.href = "/")}
+              onClick={() => (window.location.href = "/product-list")}
               gradientMonochrome="success"
               className="px-6 py-3  text-white rounded-lg shadow-lg transform hover:scale-105 transition-all"
             >
-              Go to Homepage
+              Continue Shopping
             </Button>
           </div>
         </div>

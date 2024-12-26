@@ -78,7 +78,7 @@ const Cart = ({ buttonLink, buttonText, buttonAction }) => {
       }
 
       setCartDetails(data.cart);
-      toast.success("Quantity updated successfully!");
+      // toast.success("Quantity updated successfully!");
     } catch (error) {
       toast.error("Failed to update quantity.");
     }

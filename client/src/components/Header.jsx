@@ -139,12 +139,12 @@ const Header = () => {
         <Link to={"/cart"}>
           <Button
             gradientDuoTone="purpleToBlue"
-            className="h-10 w-10 items-center"
+            className="h-10 w-10 items-center justify-center"
           >
             <ShoppingCartIcon className="h-6 w-6 mt-2 mx-4" />
-            <span className="inline-flex items-center mb-5 -ml-7 rounded-md bg-red-50 px-2  text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
+            {/* <span className="inline-flex items-center mb-5 -ml-7 rounded-md bg-red-50 px-2  text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
               {totalCartItems}
-            </span>
+            </span> */}
           </Button>
         </Link>
 

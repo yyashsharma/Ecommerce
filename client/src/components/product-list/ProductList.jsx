@@ -476,9 +476,17 @@ export function ProductGrid({ products }) {
                         </div>
                         <div>
                           <p className="text-sm font-medium text-gray-900">
-                            <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-red-600/10">
-                              In Stock : {product.stock}
+                           {
+                            product.stock>1?(
+                              <span className="inline-flex items-center rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-red-600/10">
+                             left : {product.stock}
                             </span>
+                            ):(
+                              <span className="inline-flex items-center rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-black ring-1 ring-inset ring-red-600/10">
+                              Out of Stock
+                            </span>
+                            )
+                           }
                           </p>
                           <p className="text-sm font-medium text-gray-900 mt-1">
                             <span className="flex justify-center items-center">

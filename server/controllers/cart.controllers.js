@@ -1,4 +1,5 @@
 import { Cart } from "../models/cart.model.js"
+import { Product } from "../models/product.model.js";
 import { errorHandler } from "../utils/error.js"
 
 
@@ -35,6 +36,17 @@ export const updateCartItem = async (req, res, next) => {
     const { userId } = req.params;
     const { productId, name, price, quantity, color, size, image, action } = req.body;
 
+    // Check product stock
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    if (product.stock === 1) {
+      return res.status(400).json({ message: "Out of stock" });
+    }
+
+    //Find or create a cart
     let cart = await Cart.findOne({ userId });
 
     if (!cart) {

@@ -55,10 +55,10 @@ const PaymentCancel = () => {
           </p>
           <div className="mt-6 flex justify-center gap-4">
             <button
-              onClick={() => (window.location.href = "/")}
+              onClick={() => (window.location.href = "/product-list")}
               className="px-6 py-3 bg-gray-600 text-white rounded-lg shadow-lg hover:bg-gray-700 transform hover:scale-105 transition-all"
             >
-              Go to Homepage
+              Continue Shopping
             </button>
             {/* <button
             onClick={() => window.location.href = "/support"}
