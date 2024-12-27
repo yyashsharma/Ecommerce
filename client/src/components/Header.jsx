@@ -111,8 +111,8 @@ const Header = () => {
           <TextInput
             id="search"
             type="text"
-            placeholder="Search..."
-            // className="hidden lg:inline"
+            placeholder="Search products, categories and more..."
+            className="w-80"
             value={inputValue} // Controlled input
             onChange={handleInputChange} // Update state on input change
           />
@@ -156,7 +156,7 @@ const Header = () => {
               currentUser.profilePicture ? (
                 <Avatar img={currentUser.profilePicture} alt="user" rounded />
               ) : (
-                <Avatar rounded/>
+                <Avatar rounded />
               )
             }
           >

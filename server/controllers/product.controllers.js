@@ -78,8 +78,8 @@ export const deleteProduct = async (req, res, next) => {
         return next(errorHandler(403, 'You are not allowed to delete this post'))
     }
     try {
-        await Post.findByIdAndDelete(req.params.postId);
-        res.status(200).json({ success: true, message: "Post has been deleted successfully" });
+        await Product.findByIdAndDelete(req.params.productId);
+        res.status(200).json({ success: true, message: "Product has been deleted successfully" });
     } catch (error) {
         next(error)
     }
