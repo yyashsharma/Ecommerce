@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import DashSidebar from "../components/DashSidebar";
-import DashProfile from "../components/DashProfile";
-import DashMyOrders from "../components/DashMyOrders";
+import DashSidebar from "../../components/admin/DashSidebar";
+import DashProfile from "../../components/admin/DashProfile";
+import DashMyOrders from "../../components/admin/DashMyOrders";
+import DashCreateProduct from "../../components/admin/DashCreateProduct";
 
 const Dashboard = () => {
   const location = useLocation();
   const [tab, setTab] = useState("");
-  // console.log(location)
+  // console.log(location);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -30,8 +31,11 @@ const Dashboard = () => {
       {/* orders*/}
       {tab === "my-orders" && <DashMyOrders />}
 
-      {/* posts */}
-      {/* {tab === "posts" && <DashProducts />} */}
+      {/* create  product */}
+      {tab === "create-product" && <DashCreateProduct />}
+
+      {/* all  products */}
+      {/* {tab === "products" && <DashProducts />} */}
 
       {/* users */}
       {/* {tab === "users" && <DashUsers />} */}

@@ -7,7 +7,7 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { app } from "../firebase";
+import { app } from "../../firebase";
 import { toast } from "react-toastify";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -19,7 +19,7 @@ import {
   deleteUserSuccess,
   deleteUserFailure,
   signoutSuccess,
-} from "../redux/user/userSlice";
+} from "../../redux/user/userSlice";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { Link } from "react-router-dom";
 
@@ -250,7 +250,7 @@ const DashProfile = () => {
         >
           {loading ? <Spinner size="sm" /> : "Update"}
         </Button>
-        {currentUser.isAdmin && (
+        {/* {currentUser.isAdmin && (
           <Link to={"/create-product"}>
             <Button
               type="button"
@@ -260,7 +260,7 @@ const DashProfile = () => {
               Create a product
             </Button>
           </Link>
-        )}
+        )} */}
       </form>
       <div className="flex justify-between text-red-500 mt-5">
         <Button gradientDuoTone="pinkToOrange" className="cursor-pointer" onClick={() => setOpenModal(true)}>

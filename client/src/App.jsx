@@ -11,13 +11,13 @@ import Home from "./pages/Home";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import ProductDetails from "./pages/ProductDetails";
-import CreateProduct from "./pages/CreateProduct";
+// import CreateProduct from "./components/admin/DashCreateProduct";
 import PrivateRoute from "./components/PrivateRoute";
-import OnlyAdminPrivateRoute from "./components/OnlyAdminPrivateRoute";
+// import OnlyAdminPrivateRoute from "./components/OnlyAdminPrivateRoute";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
 import OrderPlacedSuccess from "./pages/OrderPlacedSuccess";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/admin/Dashboard";
 
 // import ScrollToTop from "./components/ScrollToTop";
 
@@ -48,10 +48,10 @@ function App() {
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>
-        <Route element={<OnlyAdminPrivateRoute />}>
+        {/* <Route element={<OnlyAdminPrivateRoute />}>
           <Route path="/create-product" element={<CreateProduct />} />
-          {/* <Route path="/update-product/:productId" element={<UpdatePost />} /> */}
-        </Route>
+          <Route path="/update-product/:productId" element={<UpdatePost />} />
+        </Route> */}
       </Routes>
       <FooterComponent />
       <ToastContainer position="top-center" />

@@ -8,7 +8,7 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { app } from "../firebase";
+import { app } from "../../firebase";
 import { useState } from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-const CreateProduct = () => {
+const DashCreateProduct = () => {
   const { currentUser } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({
     name: "",
@@ -26,7 +26,7 @@ const CreateProduct = () => {
     category: "",
     colors: [],
     images: [],
-    sizes:[],
+    sizes: [],
   });
   const [files, setFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState([]);
@@ -86,11 +86,8 @@ const CreateProduct = () => {
     }
   };
 
- 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-  console.log(  currentUser.isAdmin)
     if (!currentUser?.isAdmin) {
       toast.error("You are not authorized to create a product.");
       return;
@@ -111,14 +108,14 @@ const CreateProduct = () => {
       }
 
       toast.success("Product created successfully!");
-      // navigate(`/`);
+      navigate(`/product-details/${data.savedProduct._id}`);
     } catch (error) {
       toast.error("Something went wrong while submitting the form");
     }
   };
 
   return (
-    <div className="min-h-screen p-3 max-w-3xl mx-auto">
+    <div className="min-h-screen p-3 w-[60%] mx-auto">
       <h1 className="text-center text-3xl font-semibold my-7">
         Create a Product
       </h1>
@@ -200,42 +197,44 @@ const CreateProduct = () => {
           )}
         </div>
 
-      {/* Sizes */}
-<div className="flex items-center gap-3">
-  <div className="flex gap-4">
-    <Select
-      required
-      onChange={(e) => {
-        const selectedSize = e.target.value.trim();
-        if (selectedSize !== "" && !formData.sizes.includes(selectedSize)) {
-          setFormData((prev) => ({
-            ...prev,
-            sizes: [...prev.sizes, selectedSize],
-          }));
-        }
-      }}
-    >
-      <option value="">Select a size</option>
-      <option value="S">S</option>
-      <option value="M">M</option>
-      <option value="L">L</option>
-      <option value="XL">XL</option>
-    </Select>
-  </div>
-  {formData.sizes?.length > 0 && (
-    <div className="flex flex-wrap gap-2 ">
-      {formData.sizes.map((size, index) => (
-        <span
-          key={index}
-          className="px-3 py-1 bg-teal-100 rounded-full text-teal-700"
-        >
-          {size}
-        </span>
-      ))}
-    </div>
-  )}
-</div>
-
+        {/* Sizes */}
+        <div className="flex items-center gap-3">
+          <div className="flex gap-4">
+            <Select
+              required
+              onChange={(e) => {
+                const selectedSize = e.target.value.trim();
+                if (
+                  selectedSize !== "" &&
+                  !formData.sizes.includes(selectedSize)
+                ) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    sizes: [...prev.sizes, selectedSize],
+                  }));
+                }
+              }}
+            >
+              <option value="">Select a size</option>
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>
+            </Select>
+          </div>
+          {formData.sizes?.length > 0 && (
+            <div className="flex flex-wrap gap-2 ">
+              {formData.sizes.map((size, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-teal-100 rounded-full text-teal-700"
+                >
+                  {size}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Images */}
         <div className="flex flex-col gap-4 border-4 border-teal-500 border-dotted p-3">
@@ -298,4 +297,4 @@ const CreateProduct = () => {
   );
 };
 
-export default CreateProduct;
+export default DashCreateProduct;

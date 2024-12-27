@@ -56,8 +56,12 @@ export const signin = async (req, res, next) => {
 
         const { password: pass, ...rest } = validUser._doc;
 
+        const expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() + 30);
+
         res.status(200).cookie('access_token', token, {
             httpOnly: true,
+            expires: expirationDate, // Explicit expiration date 
         }).json({ success: true, message: "User Logged in Successfully", rest })
 
     } catch (error) {
@@ -89,8 +93,12 @@ export const google = async (req, res, next) => {
 
             const { password, ...rest } = validUser._doc;
 
+            const expirationDate = new Date();
+            expirationDate.setDate(expirationDate.getDate() + 30);
+
             res.status(200).cookie('access_token', token, {
                 httpOnly: true,
+                expires: expirationDate, // Explicit expiration date
             }).json({ success: true, message: "User Logged in Successfully", rest })
         } else {
             const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8)
@@ -103,14 +111,18 @@ export const google = async (req, res, next) => {
                 password: hashedPassword,
                 profilePicture: googlePhotoUrl
             })
-             await validUser.save();
+            await validUser.save();
 
             const token = generateToken({ validUser });
 
             const { password, ...rest } = validUser._doc;
 
+            const expirationDate = new Date();
+            expirationDate.setDate(expirationDate.getDate() + 30);
+
             res.status(200).cookie('access_token', token, {
                 httpOnly: true,
+                expires: expirationDate, // Explicit expiration date
             }).json({ success: true, message: "User Logged in Successfully", rest })
 
         }

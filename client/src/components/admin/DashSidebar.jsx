@@ -8,11 +8,12 @@ import {
   HiOutlineUserGroup,
   HiUser,
 } from "react-icons/hi";
-import { GiShoppingBag } from "react-icons/gi";
+import { GiShoppingBag, GiShoppingCart } from "react-icons/gi";
 import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import { signoutSuccess } from "../redux/user/userSlice";
+import { signoutSuccess } from "../../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { FaShoppingBag } from "react-icons/fa";
 
 const DashSidebar = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -86,25 +87,37 @@ const DashSidebar = () => {
               My Orders
             </Sidebar.Item>
           </Link>
+
           {currentUser && currentUser.isAdmin && (
-            <Link to={"/dashboard?tab=approval"}>
+            <Link to={"/dashboard?tab=manage-orders"}>
               <Sidebar.Item
-                active={tab === "approval" || !tab}
-                icon={HiChartPie}
+                active={tab === "manage-orders"}
+                icon={GiShoppingCart}
                 as="div"
               >
-                Approval 
+                Manage Orders
+              </Sidebar.Item>
+            </Link>
+          )}
+          {currentUser && currentUser.isAdmin && (
+            <Link to={"/dashboard?tab=create-product"}>
+              <Sidebar.Item
+                active={tab === "create-product"}
+                icon={FaShoppingBag}
+                as="div"
+              >
+                Create Product
               </Sidebar.Item>
             </Link>
           )}
           {currentUser.isAdmin && (
-            <Link to={"/dashboard?tab=posts"}>
+            <Link to={"/dashboard?tab=products"}>
               <Sidebar.Item
-                active={tab === "posts"}
+                active={tab === "products"}
                 icon={HiDocumentText}
                 as="div"
               >
-                Posts
+                All Products
               </Sidebar.Item>
             </Link>
           )}
@@ -116,10 +129,10 @@ const DashSidebar = () => {
                   icon={HiOutlineUserGroup}
                   as="div"
                 >
-                  Users
+                  All Users
                 </Sidebar.Item>
               </Link>
-              <Link to={"/dashboard?tab=comments"}>
+              {/* <Link to={"/dashboard?tab=comments"}>
                 <Sidebar.Item
                   active={tab === "comments"}
                   icon={HiAnnotation}
@@ -127,7 +140,7 @@ const DashSidebar = () => {
                 >
                   Comments
                 </Sidebar.Item>
-              </Link>
+              </Link> */}
             </>
           )}
 
