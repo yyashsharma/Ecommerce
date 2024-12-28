@@ -5,6 +5,8 @@ import DashProfile from "../../components/admin/DashProfile";
 import DashMyOrders from "../../components/admin/DashMyOrders";
 import DashCreateProduct from "../../components/admin/DashCreateProduct";
 import DashProducts from "../../components/admin/DashProducts";
+import DashUsers from "../../components/admin/DashUsers";
+import DashOrderManagement from "../../components/admin/DashOrderManagement";
 
 const Dashboard = () => {
   const location = useLocation();
@@ -39,7 +41,10 @@ const Dashboard = () => {
       {tab === "products" && <DashProducts />}
 
       {/* users */}
-      {/* {tab === "users" && <DashUsers />} */}
+      {tab === "users" && <DashUsers />}
+
+      {/* Order Management */}
+      {tab === "order-management" && <DashOrderManagement />}
 
       {/* comments */}
       {/* {tab === "comments" && <DashComments />} */}

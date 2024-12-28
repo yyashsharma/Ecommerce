@@ -80,7 +80,16 @@ export const getusers = async (req, res, next) => {
         const limit = parseInt(req.query.limit) || 9;
         const sortDirections = req.query.order === 'asc' ? 1 : -1;
 
-        const users = await User.find()
+        const users = await User.find({
+            ...(req.query.userId && { _id: req.query.userId }),
+
+            ...(req.query.searchTerm && {
+                $or: [
+                    { username: { $regex: req.query.searchTerm, $options: 'i' } },
+                    { email: { $regex: req.query.searchTerm, $options: 'i' } },
+                ]
+            })
+        })
             .select('-password') // Exclude the 'password' field
             .sort({ updatedAt: sortDirections })
             .skip(startIndex)

@@ -128,7 +128,7 @@ export const getOrders = async (req, res) => {
         }
 
         // Filter orders by paymentStatus
-        const filteredOrders = user.orders.filter(order => 
+        const filteredOrders = user.orders.filter(order =>
             order.paymentStatus === 'cashOnDelivery' || order.paymentStatus === 'paid'
         ).sort((a, b) => b.orderDate - a.orderDate); // Sort by orderDate in descending orders
 
@@ -139,6 +139,38 @@ export const getOrders = async (req, res) => {
     }
 };
 
+
+
+export const getAllOrders = async (req, res) => {
+    try {
+        // Fetch all users with their orders populated
+        const users = await User.find({}, "username email orders")
+            .populate({
+                path: "orders.products.productId",
+                select: "name price image", // Adjust fields based on your Product schema
+            });
+
+        const allOrders = users.map((user) => ({
+            userId: user._id,
+            username: user.username,
+            email: user.email,
+            orders: user.orders,
+        }));
+
+        res.status(200).json({
+            success: true,
+            message: "All orders fetched successfully",
+            data: allOrders,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while fetching orders",
+            error: error.message,
+        });
+    }
+};
 
 
 

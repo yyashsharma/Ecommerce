@@ -91,16 +91,20 @@ export const updateProduct = async (req, res, next) => {
         return next(errorHandler(403, 'You are not allowed to update this post'))
     }
     try {
-        const updatedPost = await Post.findByIdAndUpdate(req.params.postId, {
+        const updatedProduct = await Product.findByIdAndUpdate(req.params.productId, {
             $set: {
-                title: req.body.title,
-                content: req.body.content,
+                name: req.body.name,
+                description: req.body.description,
+                price: req.body.price,
+                stock: req.body.stock,
                 category: req.body.category,
-                image: req.body.image,
+                colors: req.body.colors,
+                images: req.body.images,
+                sizes: req.body.sizes,
             }
         },
             { new: true });
-        res.status(200).json({ success: true, message: "Post has been updated successfully", updatedPost });
+        res.status(200).json({ success: true, message: "Product has been updated successfully", updatedProduct });
     } catch (error) {
         next(error)
     }

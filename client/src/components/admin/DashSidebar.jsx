@@ -89,13 +89,13 @@ const DashSidebar = () => {
           </Link>
 
           {currentUser && currentUser.isAdmin && (
-            <Link to={"/dashboard?tab=manage-orders"}>
+            <Link to={"/dashboard?tab=order-management"}>
               <Sidebar.Item
-                active={tab === "manage-orders"}
+                active={tab === "order-management"}
                 icon={GiShoppingCart}
                 as="div"
               >
-                Manage Orders
+                Order Management
               </Sidebar.Item>
             </Link>
           )}

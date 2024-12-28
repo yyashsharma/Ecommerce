@@ -6,22 +6,24 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CiShoppingTag } from "react-icons/ci";
+import DashUpdateProduct from "./DashUpdateProduct";
 
 const DashProducts = () => {
   const { currentUser } = useSelector((state) => state.user);
 
   const [products, setProducts] = useState([]);
   const [showMore, setShowMore] = useState(true);
-  const [productIdToDelete, setProductIdToDelete] = useState("");
+  const [productId, setProductId] = useState("");
   const [inputValue, setInputValue] = useState(""); // State to track input value
   const [totalProducts, setTotalProducts] = useState(0);
 
   const [openModal, setOpenModal] = useState(false);
+  const [openModal2, setOpenModal2] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`/api/v1/product/getProducts`);
+        const res = await fetch(`/api/v1/product/getProducts?order=asc`);
         const data = await res.json();
         if (data.success === false) {
           return toast.error(data.message);
@@ -45,7 +47,7 @@ const DashProducts = () => {
     const startIndex = products.length;
     try {
       const res = await fetch(
-        `/api/v1/product/getProducts?startIndex=${startIndex}`
+        `/api/v1/product/getProducts?order=asc&startIndex=${startIndex}`
       );
       const data = await res.json();
       if (data.success === false) {
@@ -63,7 +65,7 @@ const DashProducts = () => {
     setOpenModal(false);
     try {
       const res = await fetch(
-        `/api/v1/product/deleteProduct/${productIdToDelete}/${currentUser._id}`,
+        `/api/v1/product/deleteProduct/${productId}/${currentUser._id}`,
         {
           method: `DELETE`,
         }
@@ -73,7 +75,7 @@ const DashProducts = () => {
         return toast.error(data.message);
       }
       setProducts((prev) =>
-        prev.filter((product) => product._id !== productIdToDelete)
+        prev.filter((product) => product._id !== productId)
       );
       toast.success(data.message);
     } catch (error) {
@@ -117,7 +119,7 @@ const DashProducts = () => {
               <TextInput
                 id="search"
                 type="text"
-                placeholder="Search products, categories and more..."
+                placeholder="Search product by name,category,description"
                 className="w-80"
                 value={inputValue} // Controlled input
                 onChange={handleInputChange} // Update state on input change
@@ -189,7 +191,7 @@ const DashProducts = () => {
                       gradientDuoTone="pinkToOrange"
                       onClick={() => {
                         setOpenModal(true);
-                        setProductIdToDelete(product._id);
+                        setProductId(product._id);
                       }}
                       className="hover:underline"
                     >
@@ -197,13 +199,16 @@ const DashProducts = () => {
                     </Button>
                   </Table.Cell>
                   <Table.Cell>
-                    <Button outline gradientDuoTone="purpleToBlue">
-                      <Link
-                        className="hover:underline"
-                        to={`/update-product/${product._id}`}
-                      >
-                        <span>Edit</span>
-                      </Link>
+                    <Button
+                      outline
+                      gradientDuoTone="purpleToBlue"
+                      className="hover:underline"
+                      onClick={() => {
+                        setOpenModal2(true);
+                        setProductId(product._id);
+                      }}
+                    >
+                      Edit
                     </Button>
                   </Table.Cell>
                 </Table.Row>
@@ -224,7 +229,7 @@ const DashProducts = () => {
           </div>
         </>
       ) : (
-        <p>You have no products yet!</p>
+        <h1>You have no products yet!</h1>
       )}
       <Modal
         show={openModal}
@@ -250,6 +255,12 @@ const DashProducts = () => {
           </div>
         </Modal.Body>
       </Modal>
+
+      <DashUpdateProduct
+        openModal2={openModal2}
+        setOpenModal2={setOpenModal2}
+        productId={productId}
+      />
     </div>
   );
 };
