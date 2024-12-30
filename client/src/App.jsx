@@ -11,20 +11,17 @@ import Home from "./pages/Home";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import ProductDetails from "./pages/ProductDetails";
-// import CreateProduct from "./components/admin/DashCreateProduct";
 import PrivateRoute from "./components/PrivateRoute";
-// import OnlyAdminPrivateRoute from "./components/OnlyAdminPrivateRoute";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
 import OrderPlacedSuccess from "./pages/OrderPlacedSuccess";
 import Dashboard from "./pages/admin/Dashboard";
-
-// import ScrollToTop from "./components/ScrollToTop";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <Router>
-      {/* <ScrollToTop /> */}
+      <ScrollToTop />
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />

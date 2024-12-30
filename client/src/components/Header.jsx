@@ -23,7 +23,7 @@ const Header = () => {
 
   const [inputValue, setInputValue] = useState(""); // State to track input value
 
-  const [totalCartItems, setTotalCartItems] = useState(0);
+  // const [totalCartItems, setTotalCartItems] = useState(0);
 
   const navigate = useNavigate();
 
@@ -39,7 +39,7 @@ const Header = () => {
     const fetchCartItems = async () => {
       if (!currentUser || !currentUser._id) {
         // If currentUser is null or _id is not defined, return early
-        totalCartItems(0); // Reset cart details
+        // totalCartItems(0); // Reset cart details
         return;
       }
       try {
@@ -50,7 +50,7 @@ const Header = () => {
         if (data.success === false) {
           return toast.error(data.message);
         }
-        setTotalCartItems(data.cart.totalCartItems);
+        // setTotalCartItems(data.cart.totalCartItems);
         setLoading(false);
       } catch (error) {
         toast.error(error);
