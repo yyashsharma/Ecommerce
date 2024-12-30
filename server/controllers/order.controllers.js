@@ -22,11 +22,14 @@ export const createOrder = async (req, res) => {
         const address = user.addresses.id(addressId);
         if (!address) return res.status(404).json({ message: 'Address not found' });
 
+
         // Create a new order
         const newOrder = {
             products,
             totalPrice,
             paymentStatus: 'pending',
+            orderStatus: 'pending',
+            address: address,
             orderDate: Date.now(),
         };
 
@@ -143,24 +146,68 @@ export const getOrders = async (req, res) => {
 
 export const getAllOrders = async (req, res) => {
     try {
-        // Fetch all users with their orders populated
-        const users = await User.find({}, "username email orders")
+        const { searchTerm, startIndex = 0, limit = 9, order = "asc" } = req.query;
+
+        const sortDirections = order === "asc" ? 1 : -1;
+
+        // Fetch all users with their orders
+        const users = await User.find({}, "username email orders _id")
             .populate({
                 path: "orders.products.productId",
                 select: "name price image", // Adjust fields based on your Product schema
             });
 
-        const allOrders = users.map((user) => ({
-            userId: user._id,
-            username: user.username,
-            email: user.email,
-            orders: user.orders,
-        }));
+        // Filter users with orders
+        let usersWithOrders = users.filter(user => user.orders && user.orders.length > 0);
+
+
+        // Apply search filter
+        if (searchTerm) {
+            const regex = new RegExp(searchTerm, "i");
+            usersWithOrders = usersWithOrders.filter(user =>
+                regex.test(user.username) || // Check username
+                regex.test(user.email) || // Check email
+                regex.test(user._id) || // Check email
+                user.orders.some(order => // Iterate over orders
+                    regex.test(order._id) || // Check orderId
+                    order.products.some(product =>
+                        regex.test(product.name) // Check product names
+                    )
+                )
+            );
+        }
+
+        // Flatten orders with user details
+        const allOrders = usersWithOrders.flatMap(user =>
+            user.orders.map(order => ({
+                userId: user._id,
+                username: user.username,
+                email: user.email,
+                orderId: order._id,
+                orderDate: order.orderDate,
+                orderStatus: order.orderStatus,
+                paymentStatus: order.paymentStatus,
+                products: order.products,
+                totalPrice: order.totalPrice,
+                address: order.address, // Include the address field
+            }))
+        );
+
+        // Apply sorting and pagination
+        const sortedOrders = allOrders.sort((a, b) =>
+            sortDirections * (new Date(b.orderDate) - new Date(a.orderDate))
+        );
+
+        const paginatedOrders = sortedOrders.slice(
+            parseInt(startIndex),
+            parseInt(startIndex) + parseInt(limit)
+        );
 
         res.status(200).json({
             success: true,
-            message: "All orders fetched successfully",
-            data: allOrders,
+            message: "Orders fetched successfully",
+            orders: paginatedOrders,
+            totalOrders: allOrders.length,
         });
     } catch (error) {
         console.error(error);
@@ -171,6 +218,48 @@ export const getAllOrders = async (req, res) => {
         });
     }
 };
+
+
+// Update Order API
+export const updateOrder = async (req, res) => {
+    const { orderStatus, paymentStatus } = req.body;
+    const { orderId, userId } = req.params; // Expect `userId` to identify the user
+
+    try {
+        // Prepare update object dynamically
+        const updateFields = {};
+        if (orderStatus) updateFields['orders.$.orderStatus'] = orderStatus;
+        if (paymentStatus) updateFields['orders.$.paymentStatus'] = paymentStatus;
+
+        // Ensure there's at least one field to update
+        if (Object.keys(updateFields).length === 0) {
+            return res.status(400).json({ success: false, message: 'No fields provided for update' });
+        }
+
+        // Find the user and update the specific order within the orders array
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: userId, 'orders._id': orderId }, // Match the user and order
+            { $set: updateFields },
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, message: 'User or Order not found' });
+        }
+
+        // Find the updated order for response
+        const updatedOrder = updatedUser.orders.find((order) => order._id.toString() === orderId);
+
+        res.status(200).json({
+            success: true,
+            message: 'Order updated successfully',
+            order: updatedOrder,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 
 
 

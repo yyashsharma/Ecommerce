@@ -1,4 +1,5 @@
 import { Badge } from "flowbite-react";
+import { set } from "mongoose";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -7,6 +8,7 @@ const DashMyOrders = () => {
   const { currentUser } = useSelector((state) => state.user);
 
   const [orders, setOrders] = useState([]);
+  const [address, setAddress] = useState("");
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -23,7 +25,6 @@ const DashMyOrders = () => {
 
     fetchOrders();
   }, [currentUser._id]);
-
 
   // if (loading) {
   //   return <div className="text-center text-gray-600">Loading orders...</div>;
@@ -45,7 +46,7 @@ const DashMyOrders = () => {
         </p>
 
         {orders.map((order) => (
-          <div key={order._id} className="border p-4 mb-6 rounded-lg">
+          <div key={order._id} className="border border-gray-300 p-4 mb-6 rounded-lg">
             {/* Order Summary */}
             <div className="bg-gray-100 rounded-lg p-4 mb-6">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
@@ -68,7 +69,9 @@ const DashMyOrders = () => {
                 <div>
                   <p className="text-sm text-gray-600">Order Status</p>
                   <p className="font-medium text-gray-800">
-                  <Badge color="info" className="text-gray-800" >{order.orderStatus || "Status Unknown"}</Badge> 
+                    <Badge color="info" className="text-gray-800">
+                      {order.orderStatus || "Status Unknown"}
+                    </Badge>
                   </p>
                 </div>
                 {/* <button className="text-blue-600 border border-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50">
@@ -92,16 +95,25 @@ const DashMyOrders = () => {
                     />
                     <div>
                       <p className="font-medium text-gray-800">
-                     {product.name || "Unknown Product"}
+                        {product.name || "Unknown Product"}
                       </p>
                       <p className="text-sm text-gray-600">
-                      <span className="text-black">Price: </span>   ${product.price || "N/A"}
-                      <span className="text-black ml-3">Qty: </span>  {product.quantity || 1}
+                        <span className="text-black">Price: </span> $
+                        {product.price || "N/A"}
+                        <span className="text-black ml-3">Qty: </span>{" "}
+                        {product.quantity || 1}
                       </p>
                       <p className="text-sm text-gray-600">
-                      <Badge color="success" className="mb-1" ><span className="text-black">Payment Status: </span>{order.paymentStatus==="cashOnDelivery"?"Cash On Delivery":"Paid" || "Status Unknown"}</Badge> 
-                      <Badge color="info" ><span className="text-black">Delivery Status: </span>{ "delivery will be in 6 days"}</Badge> 
-
+                        <Badge color="success" className="mb-1">
+                          <span className="text-black">Payment Status: </span>
+                          {order.paymentStatus === "cashOnDelivery"
+                            ? "Cash On Delivery"
+                            : "Paid" || "Status Unknown"}
+                        </Badge>
+                        <Badge color="info">
+                          <span className="text-black">Delivery Status: </span>
+                          {"delivery will be in 6 days"}
+                        </Badge>
                       </p>
                     </div>
                   </div>
@@ -113,6 +125,34 @@ const DashMyOrders = () => {
                   </Link>
                 </div>
               ))}
+              {/* Address Section */}
+              <div className="mt-6 bg-gray-100 rounded-lg p-4">
+                <h3 className="font-medium text-gray-800 mb-2">
+                  Delivery Address
+                </h3>
+           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+           <p className="text-sm text-gray-600">
+                  <span className="font-medium text-gray-800">Name: </span>
+                  {order.address.firstName} {order.address.lastName}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium text-gray-800">Street: </span>
+                  {order.address.street}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium text-gray-800">City,State: </span>
+                  {order.address.city}, {order.address.state}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium text-gray-800">Postal Code: </span>
+                  {order.address.postalCode}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium text-gray-800">Mob: </span>
+                  {order.address.phone}
+                </p>
+           </div>
+              </div>
             </div>
           </div>
         ))}

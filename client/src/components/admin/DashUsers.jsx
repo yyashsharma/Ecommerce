@@ -135,7 +135,7 @@ const DashUsers = () => {
           </form>
 
           <Table hoverable className="shadow-md">
-            <Table.Head>
+            <Table.Head className="border-b dark:border-gray-700">
               <Table.HeadCell>Date created</Table.HeadCell>
               <Table.HeadCell>User image</Table.HeadCell>
               <Table.HeadCell>Username</Table.HeadCell>
@@ -145,7 +145,7 @@ const DashUsers = () => {
             </Table.Head>
             {users.map((user) => (
               <Table.Body className="divide-y" key={user._id}>
-                <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                <Table.Row className="bg-white border-b dark:border-gray-700 dark:bg-gray-800">
                   <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </Table.Cell>

@@ -85,6 +85,7 @@ const orderSchema = new mongoose.Schema({
         enum: ['pending', 'shipped', 'cancelled', 'dispatched', 'delivered'],
         default: 'pending',
     },
+    address: addressSchema,
     orderDate: {
         type: Date,
         default: Date.now,
