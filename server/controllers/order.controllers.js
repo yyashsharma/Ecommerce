@@ -203,11 +203,42 @@ export const getAllOrders = async (req, res) => {
             parseInt(startIndex) + parseInt(limit)
         );
 
+        // Calculate total sales for paid orders
+        const totalPaidSales = allOrders
+            .filter(order => order.paymentStatus === "paid") // Filter only paid orders
+            .reduce((sum, order) => sum + order.totalPrice, 0); // Sum up the totalPrice of paid orders
+
+        const now = new Date();
+        const oneMonthAgo = new Date(
+            now.getFullYear(),
+            now.getMonth() - 1,
+            now.getDate()
+        );
+
+        const lastMonthOrders = allOrders.filter(order =>
+            new Date(order.orderDate) >= oneMonthAgo
+        );
+
+        const lastMonthPaidOrders = allOrders.filter(order =>
+            new Date(order.orderDate) >= oneMonthAgo &&
+            order.paymentStatus === "paid" // Include only paid orders
+        );
+
+        // Calculate total sales for last month's paid orders
+        const lastMonthPaidSales = lastMonthPaidOrders.reduce(
+            (sum, order) => sum + order.totalPrice,
+            0
+        );
+
         res.status(200).json({
             success: true,
             message: "Orders fetched successfully",
             orders: paginatedOrders,
             totalOrders: allOrders.length,
+            totalPaidSales: totalPaidSales, // Total sales of paid orders
+            lastMonthOrders: lastMonthOrders.length, // Count of last month orders
+            lastMonthPaidSales: lastMonthPaidSales, // Total sales for last month's paid orders
+
         });
     } catch (error) {
         console.error(error);
@@ -260,6 +291,78 @@ export const updateOrder = async (req, res) => {
     }
 };
 
+export const getMonthlyOrderAndSalesData = async (req, res, next) => {
+    if (!req.user.isAdmin) {
+        return next(errorHandler(403, "You are not allowed to access this data"));
+    }
+
+    try {
+        // Define the months
+        const months = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+        ];
+
+        // Get the current month and year
+        const now = new Date();
+        const year = now.getFullYear();
+
+        // Initialize arrays to hold data
+        const monthlyOrders = Array(12).fill(0);
+        const monthlySales = Array(12).fill(0);
+
+        // Fetch orders
+        const orders = await User.aggregate([
+            { $unwind: "$orders" }, // Flatten orders array
+            {
+                $project: {
+                    month: { $month: "$orders.orderDate" },
+                    year: { $year: "$orders.orderDate" },
+                    totalPrice: "$orders.totalPrice",
+                },
+            },
+            {
+                $match: {
+                    year, // Filter by current year
+                },
+            },
+            {
+                $group: {
+                    _id: { month: "$month" },
+                    totalOrders: { $sum: 1 },
+                    totalSales: { $sum: "$totalPrice" },
+                },
+            },
+        ]);
+
+        // Map data to respective months
+        orders.forEach((item) => {
+            const monthIndex = item._id.month - 1; // MongoDB months are 1-based
+            monthlyOrders[monthIndex] = item.totalOrders;
+            monthlySales[monthIndex] = item.totalSales;
+        });
+
+        // Format response
+        res.status(200).json({
+            success: true,
+            months: months.slice(0, now.getMonth() + 1), // Only include months up to the current month
+            monthlyOrders: monthlyOrders.slice(0, now.getMonth() + 1),
+            monthlySales: monthlySales.slice(0, now.getMonth() + 1),
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
 
 

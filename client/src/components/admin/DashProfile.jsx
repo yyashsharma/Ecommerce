@@ -67,14 +67,20 @@ const DashProfile = () => {
     // }
 
     setImageFileUploading(true);
-
+//initialize firebase storage usin the app instance
     const storage = getStorage(app);
+    //create a unique file name
     const fileName = new Date().getTime() + imageFile.name;
+    //create a reference to location in fb storage where the file will be uploaded
     const storageRef = ref(storage, fileName);
+    //start upload the file to the storage
     const uploadTask = uploadBytesResumable(storageRef, imageFile);
+    //monitor the upload progress
     uploadTask.on(
+      //track the upload progress
       "state_changed",
       (snapshot) => {
+        //calculate the progress percentage
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
 
@@ -88,6 +94,7 @@ const DashProfile = () => {
         setImageFileUploading(false);
       },
       () => {
+        //get the download url of the uploaded file
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setImageFileUrl(downloadURL);
           setFormData({ ...formData, profilePicture: downloadURL });

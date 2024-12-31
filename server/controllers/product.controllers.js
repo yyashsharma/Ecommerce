@@ -110,3 +110,39 @@ export const updateProduct = async (req, res, next) => {
     }
 }
 
+export const getMonthlyProductData = async (req, res, next) => {
+    try {
+      // Group products by the month they were created
+      const data = await Product.aggregate([
+        {
+          $group: {
+            _id: { $month: "$createdAt" }, // Group by month
+            totalProducts: { $sum: 1 },    // Count total products
+          },
+        },
+        { $sort: { _id: 1 } }, // Sort by month in ascending order
+      ]);
+  
+      // Month names for better visualization
+      const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+  
+      // Initialize array for monthly product data
+      const monthlyProducts = Array(12).fill(0);
+  
+      // Map the aggregated data to the `monthlyProducts` array
+      data.forEach(({ _id, totalProducts }) => {
+        monthlyProducts[_id - 1] = totalProducts; // Month indexes are 0-based
+      });
+  
+      res.status(200).json({
+        success: true,
+        months,
+        monthlyProducts,
+      });
+    } catch (error) {
+      next(error); // Pass error to middleware
+    }
+  };

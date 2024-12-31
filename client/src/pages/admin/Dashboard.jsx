@@ -7,6 +7,7 @@ import DashCreateProduct from "../../components/admin/DashCreateProduct";
 import DashProducts from "../../components/admin/DashProducts";
 import DashUsers from "../../components/admin/DashUsers";
 import DashOrderManagement from "../../components/admin/DashOrderManagement";
+import DashStats from "../../components/admin/DashStats";
 
 const Dashboard = () => {
   const location = useLocation();
@@ -46,11 +47,11 @@ const Dashboard = () => {
       {/* Order Management */}
       {tab === "order-management" && <DashOrderManagement />}
 
+      {/* dashboard comp */}
+      {tab === "dash" && <DashStats />}
+
       {/* comments */}
       {/* {tab === "comments" && <DashComments />} */}
-
-      {/* dashboard comp */}
-      {/* {tab === "dash" && <DashboardComp />} */}
     </div>
   );
 };

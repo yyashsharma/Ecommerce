@@ -139,3 +139,50 @@ export const getuser = async (req, res, next) => {
     }
 }
 
+export const getMonthlyUserData = async (req, res, next) => {
+    if (!req.user.isAdmin) {
+        return next(errorHandler(403, "You are not allowed to view this data"));
+    }
+
+    try {
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+        const monthlyUserCounts = await User.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: startOfYear },
+                },
+            },
+            {
+                $group: {
+                    _id: { $month: "$createdAt" },
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $sort: { _id: 1 },
+            },
+        ]);
+
+        const months = [
+            "January", "February", "March", "April", "May",
+            "June", "July", "August", "September", "October", "November", "December",
+        ];
+        const monthlyUsers = Array(12).fill(0);
+        monthlyUserCounts.forEach(entry => {
+            monthlyUsers[entry._id - 1] = entry.count;
+        });
+
+        res.status(200).json({
+            success: true,
+            months,
+            monthlyUsers,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+
