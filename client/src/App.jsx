@@ -28,22 +28,27 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
-        <Route
-          path="/cart"
-          element={<Cart buttonLink={"/checkout"} buttonText={"Checkout"} />}
-        />
-        <Route path="/checkout" element={<Checkout />} />
+
         <Route path="/product-list" element={<ProductList />} />
-        <Route path="/payment/success" element={<PaymentSuccess />} />
-        <Route path="/payment/cancel" element={<PaymentCancel />} />
-        <Route path="/order-placed/success" element={<OrderPlacedSuccess />} />
+
         <Route
           path="/product-details/:productId"
           element={<ProductDetails />}
         />
+        <Route
+          path="/cart"
+          element={<Cart buttonLink={"/checkout"} buttonText={"Checkout"} />}
+        />
 
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/payment/success" element={<PaymentSuccess />} />
+          <Route path="/payment/cancel" element={<PaymentCancel />} />
+          <Route
+            path="/order-placed/success"
+            element={<OrderPlacedSuccess />}
+          />
         </Route>
         {/* <Route element={<OnlyAdminPrivateRoute />}>
           <Route path="/create-product" element={<CreateProduct />} />
