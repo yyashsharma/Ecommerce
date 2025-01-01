@@ -12,12 +12,12 @@ import { ErrorHandlerMiddleware } from './middlewares/Errormiddleware.js';
 import cookieParser from 'cookie-parser';
 import Stripe from 'stripe';
 
-// import path from 'path'
+import path from 'path'
 
 
 config();
 
-// const __dirname = path.resolve();
+const __dirname = path.resolve();
 
 export const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Replace with your Stripe Secret Key
 
@@ -45,11 +45,11 @@ app.use('/api/v1/payment', paymentRoutes)
 
 
 //it run the index.html file in client side
-// app.use(express.static(path.join(__dirname, '/client/dist')));
+app.use(express.static(path.join(__dirname, '/client/dist')));
 
-// app.get('*', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'))
-// })
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'))
+})
 
 // error middleware for handling errors
 app.use(ErrorHandlerMiddleware)
