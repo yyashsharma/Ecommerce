@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Spinner } from "flowbite-react";
 
 const SignIn = lazy(() => import("./pages/SignIn"));
 const SignUp = lazy(() => import("./pages/SignUp"));
@@ -23,7 +24,15 @@ const ScrollToTop = lazy(() => import("./components/ScrollToTop"));
 function App() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense
+        fallback={
+          <>
+            <div className=" flex justify-center items-center h-screen">
+              <Spinner size="xl" />
+            </div>
+          </>
+        }
+      >
         <ScrollToTop />
         <Header />
         <Routes>

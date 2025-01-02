@@ -73,7 +73,7 @@ const ProductDetails = () => {
         image: product.images[0],
       });
     } catch (error) {
-      toast.error("Failed to add to cart");
+      toast.error("Sign in to add items to cart");
     }
   };
 
@@ -295,8 +295,7 @@ const updateCartItem = async (userId, cartItem) => {
       throw new Error(data.message || "Failed to update cart");
     }
   } catch (error) {
-    toast.error(error.message || "An error occurred while updating the cart");
-    throw error; // Rethrow error for further handling if needed
+    toast.error( "Out of stock");
   }
 };
 

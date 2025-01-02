@@ -29,7 +29,7 @@ const PaymentCancel = () => {
 
         const data = await response.json();
         if (response.ok) {
-          toast.error("Payment canceled. Order updated.");
+          toast.error("Payment canceled.");
         } else {
           toast.error(data.message || "Failed to update payment status.");
         }

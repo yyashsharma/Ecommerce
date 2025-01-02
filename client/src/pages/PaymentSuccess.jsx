@@ -30,7 +30,7 @@ const PaymentSuccess = () => {
 
             const data = await response.json();
             if (response.ok) {
-                toast.success("Payment successful! Order updated and stock adjusted.");
+                toast.success("Payment successful!");
             } else {
                 toast.error(data.message || "Failed to update payment status.");
             }
