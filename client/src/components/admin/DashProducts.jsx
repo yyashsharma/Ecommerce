@@ -90,11 +90,11 @@ const DashProducts = () => {
     e.preventDefault();
     // If inputValue is empty, navigate to all products
     const searchTerm = inputValue.trim()
-      ? `?searchTerm=${encodeURIComponent(inputValue)}`
+      ? `&searchTerm=${encodeURIComponent(inputValue)}`
       : "";
 
     try {
-      const res = await fetch(`/api/v1/product/getProducts${searchTerm}`);
+      const res = await fetch(`/api/v1/product/getProducts?order=asc${searchTerm}`);
       const data = await res.json();
       if (data.success === false) {
         return toast.error(data.message);
