@@ -1,63 +1,67 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
-import Header from "./components/Header";
+import React, { Suspense, lazy } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import FooterComponent from "./components/Footer";
-import ProductList from "./components/product-list/ProductList";
-import About from "./pages/About";
-import Home from "./pages/Home";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
-import ProductDetails from "./pages/ProductDetails";
-import PrivateRoute from "./components/PrivateRoute";
-import PaymentSuccess from "./pages/PaymentSuccess";
-import PaymentCancel from "./pages/PaymentCancel";
-import OrderPlacedSuccess from "./pages/OrderPlacedSuccess";
-import Dashboard from "./pages/admin/Dashboard";
-import ScrollToTop from "./components/ScrollToTop";
+
+const SignIn = lazy(() => import("./pages/SignIn"));
+const SignUp = lazy(() => import("./pages/SignUp"));
+const Header = lazy(() => import("./components/Header"));
+const FooterComponent = lazy(() => import("./components/Footer"));
+const ProductList = lazy(() => import("./components/product-list/ProductList"));
+const About = lazy(() => import("./pages/About"));
+const Home = lazy(() => import("./pages/Home"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const ProductDetails = lazy(() => import("./pages/ProductDetails"));
+const PrivateRoute = lazy(() => import("./components/PrivateRoute"));
+const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
+const PaymentCancel = lazy(() => import("./pages/PaymentCancel"));
+const OrderPlacedSuccess = lazy(() => import("./pages/OrderPlacedSuccess"));
+const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
+const ScrollToTop = lazy(() => import("./components/ScrollToTop"));
 
 function App() {
   return (
-    <Router>
-      <ScrollToTop />
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/sign-up" element={<SignUp />} />
+    <BrowserRouter>
+      <Suspense fallback={<div>Loading...</div>}>
+        <ScrollToTop />
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
 
-        <Route path="/product-list" element={<ProductList />} />
+          <Route path="/product-list" element={<ProductList />} />
 
-        <Route
-          path="/product-details/:productId"
-          element={<ProductDetails />}
-        />
-        <Route
-          path="/cart"
-          element={<Cart buttonLink={"/checkout"} buttonText={"Checkout"} />}
-        />
-
-        <Route element={<PrivateRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/payment/success" element={<PaymentSuccess />} />
-          <Route path="/payment/cancel" element={<PaymentCancel />} />
           <Route
-            path="/order-placed/success"
-            element={<OrderPlacedSuccess />}
+            path="/product-details/:productId"
+            element={<ProductDetails />}
           />
-        </Route>
-        {/* <Route element={<OnlyAdminPrivateRoute />}>
+          <Route
+            path="/cart"
+            element={<Cart buttonLink={"/checkout"} buttonText={"Checkout"} />}
+          />
+
+          <Route element={<PrivateRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/payment/success" element={<PaymentSuccess />} />
+            <Route path="/payment/cancel" element={<PaymentCancel />} />
+            <Route
+              path="/order-placed/success"
+              element={<OrderPlacedSuccess />}
+            />
+          </Route>
+          {/* <Route element={<OnlyAdminPrivateRoute />}>
           <Route path="/create-product" element={<CreateProduct />} />
           <Route path="/update-product/:productId" element={<UpdatePost />} />
         </Route> */}
-      </Routes>
-      <FooterComponent />
-      <ToastContainer position="top-center" />
-    </Router>
+        </Routes>
+        <FooterComponent />
+        <ToastContainer position="top-center" />
+      </Suspense>
+    </BrowserRouter>
   );
 }
 

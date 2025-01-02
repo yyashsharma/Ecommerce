@@ -44,7 +44,6 @@ const DashOrderManagement = () => {
   }, [currentUser._id]);
 
   const handleStatusChange = async (userId, orderId, field, value) => {
-    console.log(userId, orderId, field, value);
     const confirmChange = window.confirm(
       `Are you sure you want to update ${field} to "${value}"?`
     );
