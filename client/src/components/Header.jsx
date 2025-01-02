@@ -180,7 +180,7 @@ const Header = () => {
             </Button>
           </Link>
         )}
-        <Navbar.Toggle className="ml-44" />
+        <Navbar.Toggle className="ml-28 lg:ml-44" />
       </div>
       <Navbar.Collapse>
         <Navbar.Link active={path === "/"} as={"div"}>
