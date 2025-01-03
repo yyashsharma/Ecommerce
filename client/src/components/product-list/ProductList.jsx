@@ -58,6 +58,10 @@ const filters = [
       { value: "smartphone", label: "Smartphone", checked: false },
       { value: "cleaning", label: "Cleaning", checked: false },
       { value: "laptop", label: "Laptop", checked: false },
+      { value: "kitchen", label: "kitchen", checked: false },
+      { value: "electronics", label: "electronics", checked: false },
+      { value: "daily use", label: "daily use", checked: false },
+      { value: "furniture", label: "furniture", checked: false },
     ],
   },
 ];
