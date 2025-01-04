@@ -160,38 +160,57 @@ export const getAllOrders = async (req, res) => {
         // Filter users with orders
         let usersWithOrders = users.filter(user => user.orders && user.orders.length > 0);
 
+        let allOrders = [];
 
-        // Apply search filter
         if (searchTerm) {
             const regex = new RegExp(searchTerm, "i");
-            usersWithOrders = usersWithOrders.filter(user =>
-                regex.test(user.username) || // Check username
-                regex.test(user.email) || // Check email
-                regex.test(user._id) || // Check email
-                user.orders.some(order => // Iterate over orders
-                    regex.test(order._id) || // Check orderId
+
+            usersWithOrders.forEach(user => {
+                // Check if the user matches the search criteria
+                const userMatches = regex.test(user.username) || regex.test(user.email) || regex.test(user._id.toString());
+
+                // Filter orders based on search criteria
+                const matchedOrders = user.orders.filter(order =>
+                    userMatches || // Include all orders if user matches
+                    regex.test(order._id.toString()) || // Check orderId
                     order.products.some(product =>
                         regex.test(product.name) // Check product names
                     )
-                )
+                );
+
+                // Add matched orders with user details to the result
+                matchedOrders.forEach(order => {
+                    allOrders.push({
+                        userId: user._id,
+                        username: user.username,
+                        email: user.email,
+                        orderId: order._id,
+                        orderDate: order.orderDate,
+                        orderStatus: order.orderStatus,
+                        paymentStatus: order.paymentStatus,
+                        products: order.products,
+                        totalPrice: order.totalPrice,
+                        address: order.address, // Include the address field
+                    });
+                });
+            });
+        } else {
+            // If no search term, flatten all orders with user details
+            allOrders = usersWithOrders.flatMap(user =>
+                user.orders.map(order => ({
+                    userId: user._id,
+                    username: user.username,
+                    email: user.email,
+                    orderId: order._id,
+                    orderDate: order.orderDate,
+                    orderStatus: order.orderStatus,
+                    paymentStatus: order.paymentStatus,
+                    products: order.products,
+                    totalPrice: order.totalPrice,
+                    address: order.address, // Include the address field
+                }))
             );
         }
-
-        // Flatten orders with user details
-        const allOrders = usersWithOrders.flatMap(user =>
-            user.orders.map(order => ({
-                userId: user._id,
-                username: user.username,
-                email: user.email,
-                orderId: order._id,
-                orderDate: order.orderDate,
-                orderStatus: order.orderStatus,
-                paymentStatus: order.paymentStatus,
-                products: order.products,
-                totalPrice: order.totalPrice,
-                address: order.address, // Include the address field
-            }))
-        );
 
         // Apply sorting and pagination
         const sortedOrders = allOrders.sort((a, b) =>
@@ -238,7 +257,6 @@ export const getAllOrders = async (req, res) => {
             totalPaidSales: totalPaidSales, // Total sales of paid orders
             lastMonthOrders: lastMonthOrders.length, // Count of last month orders
             lastMonthPaidSales: lastMonthPaidSales, // Total sales for last month's paid orders
-
         });
     } catch (error) {
         console.error(error);
@@ -249,6 +267,7 @@ export const getAllOrders = async (req, res) => {
         });
     }
 };
+
 
 
 // Update Order API
